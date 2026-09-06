@@ -1,0 +1,2 @@
+# Snapshot-test reference images: binary, never diffed/merged as text.
+qbremoteSnapshotTests/__Snapshots__/**/*.png binary

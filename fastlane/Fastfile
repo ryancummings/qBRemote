@@ -1,0 +1,64 @@
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+ENV["LANG"] ||= "en_US.UTF-8"
+ENV["LC_ALL"] ||= "en_US.UTF-8"
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] ||= "30"
+ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] ||= "2"
+
+default_platform(:ios)
+
+SNAPSHOT_RUNTIME = "26.5"
+SNAPSHOT_RUNTIME_ID = "com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+SNAPSHOT_DEVICES = {
+  "qbremote-VisualTests-17Pro" => "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+  "qbremote-VisualTests-iPadPro13" => "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-13-inch-M5-16GB"
+}.freeze
+
+def ensure_snapshot_devices
+  available = sh("xcrun", "simctl", "list", "devices", "available", log: false)
+  SNAPSHOT_DEVICES.each do |name, device_type|
+    next if available.include?("#{name} (")
+
+    sh("xcrun", "simctl", "create", name, device_type, SNAPSHOT_RUNTIME_ID)
+  end
+end
+
+platform :ios do
+  desc "Run the unit and UI test targets in the qbremote scheme"
+  lane :test do
+    run_tests(
+      scheme: "qbremote",
+      xcodebuild_formatter: "xcbeautify"
+    )
+  end
+
+  desc "Run visual snapshot tests on the pinned iPhone and iPad simulators"
+  lane :snapshot_tests do
+    ensure_snapshot_devices
+    SNAPSHOT_DEVICES.each_key do |device|
+      run_tests(
+        scheme: "qbremoteSnapshotTests",
+        destination: "platform=iOS Simulator,name=#{device},OS=#{SNAPSHOT_RUNTIME}",
+        xcodebuild_formatter: "xcbeautify"
+      )
+    end
+  end
+
+  desc "Record visual snapshot references after an intentional UI change"
+  lane :record_snapshots do
+    require "fileutils"
+    ensure_snapshot_devices
+    FileUtils.rm_rf(File.expand_path("../qbremoteSnapshotTests/__Snapshots__", __dir__))
+
+    SNAPSHOT_DEVICES.each_key do |device|
+      run_tests(
+        scheme: "qbremoteSnapshotTests",
+        destination: "platform=iOS Simulator,name=#{device},OS=#{SNAPSHOT_RUNTIME}",
+        xcodebuild_formatter: "xcbeautify",
+        fail_build: false
+      )
+    end
+
+    UI.important("Review every reference image, then run `fastlane snapshot_tests`.")
+  end
+end

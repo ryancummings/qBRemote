@@ -1,0 +1,84 @@
+# Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+/.swiftpm
+Packages/
+
+# Xcode Simulator
+*.xcappdata
+
+# CocoaPods (not used here, but just in case)
+Pods/
+Podfile.lock
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/deliver_screenshots/
+fastlane/test_output
+
+# Local credentials — dotenv files anywhere in the tree, not just fastlane/
+# (which fastlane auto-loads). Unanchored on purpose: these patterns have no
+# slash, so they match at every depth and a stray .env outside fastlane/ can't
+# be committed with live secrets in it. The .env.example templates stay tracked.
+.env
+.env.*
+!.env.example
+
+# Generated store screenshots (device-framed) — regenerated from raw captures
+# via the shared @onerad/promo-framer package (promo.config.mjs) / `fastlane frame`.
+store-assets/framed/
+store-assets/.frame-tmp/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Vim / Editor swap files
+*.swp
+*.swo
+*~
+
+# JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# Sensitive / Local config
+secrets.xcconfig
+
+# Build logs and test results
+*.log
+*.xcresult/
+result*.json
+
+# npm deps for the shared promo framer
+node_modules/
+
+# Local Apple signing overrides
+*.xcconfig.local

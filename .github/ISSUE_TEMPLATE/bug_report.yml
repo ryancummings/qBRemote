@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a reproducible problem in the app
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, cookies, private server addresses, or torrent names.
+  - type: input
+    id: app-version
+    attributes:
+      label: App version
+    validations:
+      required: true
+  - type: input
+    id: ios-version
+    attributes:
+      label: iOS or iPadOS version
+    validations:
+      required: true
+  - type: input
+    id: qbittorrent-version
+    attributes:
+      label: qBittorrent version
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Give the smallest sequence that causes the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add a redacted screenshot or log if it helps.

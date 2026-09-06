@@ -1,0 +1,11 @@
+Simple qBittorrent Remote is the essential companion app for your qBittorrent server, designed to give you full control over your downloads from anywhere. Built as a seamless alternative to the standard Web UI, it provides a much smoother, mobile-friendly experience—especially when handling .torrent file uploads.
+
+Key Features:
+-Start downloads instantly via magnet links or .torrent file uploads.
+-Quickly send .torrent files to your server directly from the iOS Files app context menu.
+-Seamlessly manage active and paused transfers.
+-View detailed statistics for individual torrents.
+-Monitor download and upload speeds in real-time.
+-Manage your queue and prioritize important files.
+
+Note: Simple qBittorrent Remote is a remote management tool, not a standalone downloader. It requires an active qBittorrent client running on a computer or NAS with the Web UI enabled.

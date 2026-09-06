@@ -1,0 +1,144 @@
+//
+//  ServerPreferencesViewModel.swift
+//  qbremote
+//
+
+import Foundation
+import SwiftData
+import OSLog
+
+@MainActor
+@Observable
+final class ServerPreferencesViewModel {
+    private let logger = Logger(subsystem: "com.ryancummings.qbremote", category: "ServerPreferencesViewModel")
+    
+    var preferences: ServerPreferences?
+    var originalPreferences: ServerPreferences?
+    var isLoading = false
+    var isSaving = false
+    
+    var error: Error?
+    var showError = false
+    var errorMessage = ""
+    
+    var profile: ServerProfile?
+    var service: QBittorrentAPIServiceProtocol?
+    var modelContext: ModelContext?
+    
+    // UI Bindings
+    var listenPortString: String = ""
+    var webUIPortString: String = ""
+    
+    var upLimitKBString: String = ""
+    var dlLimitKBString: String = ""
+    var altUpLimitKBString: String = ""
+    var altDlLimitKBString: String = ""
+    
+    func configure(with profile: ServerProfile, context: ModelContext, injectedService: QBittorrentAPIServiceProtocol? = nil) {
+        self.profile = profile
+        self.modelContext = context
+        
+        var serviceToUse = injectedService
+        
+        if ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
+            serviceToUse = MockQBittorrentAPIService()
+        }
+        
+        if let serviceToUse {
+            self.service = serviceToUse
+        } else {
+            let scheme = profile.useHTTPS ? "https" : "http"
+            let portStr = profile.port != nil ? ":\(profile.port!)" : ""
+            if let url = URL(string: "\(scheme)://\(profile.host)\(portStr)") {
+                self.service = QBittorrentAPIService(baseURL: url, allowUntrustedSSL: profile.allowUntrustedSSL)
+            }
+        }
+    }
+    
+    func loadPreferences(password: String) async {
+        guard let service, let profile else { return }
+        isLoading = true
+        
+        do {
+            let _ = try await service.login(username: profile.username, password: password)
+            let prefs = try await service.getPreferences()
+            self.preferences = prefs
+            self.originalPreferences = prefs
+            
+            // Populate UI strings
+            self.listenPortString = prefs.listen_port.map(String.init) ?? ""
+            self.webUIPortString = prefs.web_ui_port.map(String.init) ?? ""
+            
+            // Convert bytes/s to KB/s for UI
+            self.upLimitKBString = prefs.up_limit.map { String($0 / 1024) } ?? ""
+            self.dlLimitKBString = prefs.dl_limit.map { String($0 / 1024) } ?? ""
+            self.altUpLimitKBString = prefs.alt_up_limit.map { String($0 / 1024) } ?? ""
+            self.altDlLimitKBString = prefs.alt_dl_limit.map { String($0 / 1024) } ?? ""
+            
+        } catch {
+            logger.error("Failed to load preferences: \(error.localizedDescription)")
+            self.error = error
+            self.errorMessage = (error as? QBError)?.errorDescription ?? error.localizedDescription
+            self.showError = true
+        }
+        
+        isLoading = false
+    }
+    
+    func savePreferences(password: String) async -> Bool {
+        guard let service, let profile, var prefs = preferences else { return false }
+        isSaving = true
+        
+        // Update prefs from UI strings
+        prefs.listen_port = Int(listenPortString)
+        let oldWebUIPort = prefs.web_ui_port
+        prefs.web_ui_port = Int(webUIPortString)
+        
+        let oldUseHTTPS = prefs.use_https
+        
+        prefs.up_limit = Int(upLimitKBString).map { $0 * 1024 }
+        prefs.dl_limit = Int(dlLimitKBString).map { $0 * 1024 }
+        prefs.alt_up_limit = Int(altUpLimitKBString).map { $0 * 1024 }
+        prefs.alt_dl_limit = Int(altDlLimitKBString).map { $0 * 1024 }
+        
+        do {
+            let _ = try await service.login(username: profile.username, password: password)
+            try await service.setPreferences(prefs)
+            
+            // Update local profile if connection settings changed
+            var needsReconnect = false
+            if prefs.web_ui_port != oldWebUIPort || prefs.use_https != oldUseHTTPS {
+                profile.port = prefs.web_ui_port
+                if let useHttps = prefs.use_https {
+                    profile.useHTTPS = useHttps
+                }
+                needsReconnect = true
+            }
+            
+            if needsReconnect {
+                profile.lastUpdated = Date.now
+                try? modelContext?.save()
+            }
+            
+            isSaving = false
+            return true
+            
+        } catch {
+            logger.error("Failed to save preferences: \(error.localizedDescription)")
+            self.error = error
+            self.errorMessage = (error as? QBError)?.errorDescription ?? error.localizedDescription
+            self.showError = true
+            isSaving = false
+            return false
+        }
+    }
+    
+    var hasConnectionSettingsChanged: Bool {
+        guard let original = originalPreferences, let current = preferences else { return false }
+        let currentWebUI = Int(webUIPortString)
+        let oldWebUIPort = original.web_ui_port
+        let oldUseHTTPS = original.use_https
+        
+        return currentWebUI != oldWebUIPort || current.use_https != oldUseHTTPS
+    }
+}

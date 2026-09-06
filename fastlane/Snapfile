@@ -1,0 +1,31 @@
+devices([
+  "qbremote-PromoShots-17ProMax",
+  "qbremote-PromoShots-iPadPro13"
+])
+
+languages([
+  "en-US"
+])
+
+scheme("qbremote")
+
+# Ported from sibling SDCull (2026-07-19), where both bit hard:
+# - xcbeautify (brew-installed, encoding-agnostic) instead of the deprecated
+#   xcpretty, which crashes on non-ASCII output in locale-less shells and fails
+#   the run via pipefail even with a full valid capture.
+xcodebuild_formatter("xcbeautify")
+# - Run on the booted device, not parallel-testing clones: Xcode otherwise
+#   spawns a "Clone 2" simulator whose xctrunner intermittently fails to launch
+#   (FBSOpenApplicationServiceErrorDomain / RequestDenied), failing the run
+#   even though Clone 1 captured every screenshot.
+xcargs("-parallel-testing-enabled NO")
+
+output_directory("./fastlane/screenshots")
+clear_previous_screenshots(true)
+
+# Pin the status bar to 9:41 with full battery and reception, matching sibling
+# SDCull's Snapfile. Without this, captures carry whatever wall-clock time the
+# simulator showed, so the shipped carousel's clock changes from screen to
+# screen — invisible to every automated check, and it reached the store in
+# nisrisc before being caught. Takes effect on the next `fastlane screenshots`.
+override_status_bar(true)

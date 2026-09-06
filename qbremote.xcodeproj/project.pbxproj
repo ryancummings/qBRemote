@@ -1,0 +1,732 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8B757FA82F61D86E0047CE66 /* qbremote.icon in Resources */ = {isa = PBXBuildFile; fileRef = 8B757FA72F61D86E0047CE66 /* qbremote.icon */; };
+		CAFED00D0000000000000005 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = CAFED00D000000000000000E /* SnapshotTesting */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8BF553D42F59FEFD0051C94B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BF553B92F59FEFC0051C94B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BF553C02F59FEFC0051C94B;
+			remoteInfo = qbremote;
+		};
+		8BF553DE2F59FEFD0051C94B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BF553B92F59FEFC0051C94B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BF553C02F59FEFC0051C94B;
+			remoteInfo = qbremote;
+		};
+		CAFED00D0000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8BF553B92F59FEFC0051C94B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8BF553C02F59FEFC0051C94B;
+			remoteInfo = qbremote;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8B757FA72F61D86E0047CE66 /* qbremote.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = qbremote.icon; sourceTree = "<group>"; };
+		8BF553C12F59FEFC0051C94B /* qbremote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = qbremote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BF553D32F59FEFD0051C94B /* qbremoteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = qbremoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BF553DD2F59FEFD0051C94B /* qbremoteUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = qbremoteUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAFED00D0000000000000002 /* qbremoteSnapshotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = qbremoteSnapshotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8BF553A12F59FEFC0051C94B /* Exceptions for "qbremote" folder in "qbremote" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8BF553C02F59FEFC0051C94B /* qbremote */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8BF553C32F59FEFC0051C94B /* qbremote */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8BF553A12F59FEFC0051C94B /* Exceptions for "qbremote" folder in "qbremote" target */,
+			);
+			path = qbremote;
+			sourceTree = "<group>";
+		};
+		8BF553D62F59FEFD0051C94B /* qbremoteTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = qbremoteTests;
+			sourceTree = "<group>";
+		};
+		8BF553E02F59FEFD0051C94B /* qbremoteUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = qbremoteUITests;
+			sourceTree = "<group>";
+		};
+		CAFED00D0000000000000003 /* qbremoteSnapshotTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = qbremoteSnapshotTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8BF553BE2F59FEFC0051C94B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BF553D02F59FEFD0051C94B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BF553DA2F59FEFD0051C94B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAFED00D0000000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAFED00D0000000000000005 /* SnapshotTesting in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8BF553B82F59FEFC0051C94B = {
+			isa = PBXGroup;
+			children = (
+				8BF553C32F59FEFC0051C94B /* qbremote */,
+				8BF553D62F59FEFD0051C94B /* qbremoteTests */,
+				CAFED00D0000000000000003 /* qbremoteSnapshotTests */,
+				8BF553E02F59FEFD0051C94B /* qbremoteUITests */,
+				8BF553C22F59FEFC0051C94B /* Products */,
+				8B757FA72F61D86E0047CE66 /* qbremote.icon */,
+			);
+			sourceTree = "<group>";
+		};
+		8BF553C22F59FEFC0051C94B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8BF553C12F59FEFC0051C94B /* qbremote.app */,
+				8BF553D32F59FEFD0051C94B /* qbremoteTests.xctest */,
+				CAFED00D0000000000000002 /* qbremoteSnapshotTests.xctest */,
+				8BF553DD2F59FEFD0051C94B /* qbremoteUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8BF553C02F59FEFC0051C94B /* qbremote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BF553E72F59FEFD0051C94B /* Build configuration list for PBXNativeTarget "qbremote" */;
+			buildPhases = (
+				8BF553BD2F59FEFC0051C94B /* Sources */,
+				8BF553BE2F59FEFC0051C94B /* Frameworks */,
+				8BF553BF2F59FEFC0051C94B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8BF553C32F59FEFC0051C94B /* qbremote */,
+			);
+			name = qbremote;
+			packageProductDependencies = (
+			);
+			productName = qbremote;
+			productReference = 8BF553C12F59FEFC0051C94B /* qbremote.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8BF553D22F59FEFD0051C94B /* qbremoteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BF553EA2F59FEFD0051C94B /* Build configuration list for PBXNativeTarget "qbremoteTests" */;
+			buildPhases = (
+				8BF553CF2F59FEFD0051C94B /* Sources */,
+				8BF553D02F59FEFD0051C94B /* Frameworks */,
+				8BF553D12F59FEFD0051C94B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8BF553D52F59FEFD0051C94B /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8BF553D62F59FEFD0051C94B /* qbremoteTests */,
+			);
+			name = qbremoteTests;
+			packageProductDependencies = (
+			);
+			productName = qbremoteTests;
+			productReference = 8BF553D32F59FEFD0051C94B /* qbremoteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CAFED00D0000000000000006 /* qbremoteSnapshotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CAFED00D000000000000000C /* Build configuration list for PBXNativeTarget "qbremoteSnapshotTests" */;
+			buildPhases = (
+				CAFED00D0000000000000007 /* Sources */,
+				CAFED00D0000000000000004 /* Frameworks */,
+				CAFED00D0000000000000008 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CAFED00D0000000000000009 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CAFED00D0000000000000003 /* qbremoteSnapshotTests */,
+			);
+			name = qbremoteSnapshotTests;
+			packageProductDependencies = (
+				CAFED00D000000000000000E /* SnapshotTesting */,
+			);
+			productName = qbremoteSnapshotTests;
+			productReference = CAFED00D0000000000000002 /* qbremoteSnapshotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8BF553DC2F59FEFD0051C94B /* qbremoteUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8BF553ED2F59FEFD0051C94B /* Build configuration list for PBXNativeTarget "qbremoteUITests" */;
+			buildPhases = (
+				8BF553D92F59FEFD0051C94B /* Sources */,
+				8BF553DA2F59FEFD0051C94B /* Frameworks */,
+				8BF553DB2F59FEFD0051C94B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8BF553DF2F59FEFD0051C94B /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8BF553E02F59FEFD0051C94B /* qbremoteUITests */,
+			);
+			name = qbremoteUITests;
+			packageProductDependencies = (
+			);
+			productName = qbremoteUITests;
+			productReference = 8BF553DD2F59FEFD0051C94B /* qbremoteUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8BF553B92F59FEFC0051C94B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2610;
+				LastUpgradeCheck = 2610;
+				TargetAttributes = {
+					8BF553C02F59FEFC0051C94B = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+					8BF553D22F59FEFD0051C94B = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = 8BF553C02F59FEFC0051C94B;
+					};
+					8BF553DC2F59FEFD0051C94B = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = 8BF553C02F59FEFC0051C94B;
+					};
+					CAFED00D0000000000000006 = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = 8BF553C02F59FEFC0051C94B;
+					};
+				};
+			};
+			buildConfigurationList = 8BF553BC2F59FEFC0051C94B /* Build configuration list for PBXProject "qbremote" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8BF553B82F59FEFC0051C94B;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CAFED00D000000000000000D /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8BF553C22F59FEFC0051C94B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8BF553C02F59FEFC0051C94B /* qbremote */,
+				8BF553D22F59FEFD0051C94B /* qbremoteTests */,
+				CAFED00D0000000000000006 /* qbremoteSnapshotTests */,
+				8BF553DC2F59FEFD0051C94B /* qbremoteUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8BF553BF2F59FEFC0051C94B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B757FA82F61D86E0047CE66 /* qbremote.icon in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BF553D12F59FEFD0051C94B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BF553DB2F59FEFD0051C94B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAFED00D0000000000000008 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8BF553BD2F59FEFC0051C94B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BF553CF2F59FEFD0051C94B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8BF553D92F59FEFD0051C94B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAFED00D0000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8BF553D52F59FEFD0051C94B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BF553C02F59FEFC0051C94B /* qbremote */;
+			targetProxy = 8BF553D42F59FEFD0051C94B /* PBXContainerItemProxy */;
+		};
+		8BF553DF2F59FEFD0051C94B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BF553C02F59FEFC0051C94B /* qbremote */;
+			targetProxy = 8BF553DE2F59FEFD0051C94B /* PBXContainerItemProxy */;
+		};
+		CAFED00D0000000000000009 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8BF553C02F59FEFC0051C94B /* qbremote */;
+			targetProxy = CAFED00D0000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8BF553E52F59FEFD0051C94B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8BF553E62F59FEFD0051C94B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8BF553E82F59FEFD0051C94B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = qbremote/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremote;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8BF553E92F59FEFD0051C94B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = qbremote/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremote;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8BF553EB2F59FEFD0051C94B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremoteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/qbremote.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/qbremote";
+			};
+			name = Debug;
+		};
+		8BF553EC2F59FEFD0051C94B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremoteTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/qbremote.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/qbremote";
+			};
+			name = Release;
+		};
+		CAFED00D000000000000000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremoteSnapshotTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/qbremote.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/qbremote";
+			};
+			name = Debug;
+		};
+		CAFED00D000000000000000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremoteSnapshotTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/qbremote.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/qbremote";
+			};
+			name = Release;
+		};
+		8BF553EE2F59FEFD0051C94B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremoteUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = qbremote;
+			};
+			name = Debug;
+		};
+		8BF553EF2F59FEFD0051C94B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.OneRadStudio.qbremoteUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = qbremote;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8BF553BC2F59FEFC0051C94B /* Build configuration list for PBXProject "qbremote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BF553E52F59FEFD0051C94B /* Debug */,
+				8BF553E62F59FEFD0051C94B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8BF553E72F59FEFD0051C94B /* Build configuration list for PBXNativeTarget "qbremote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BF553E82F59FEFD0051C94B /* Debug */,
+				8BF553E92F59FEFD0051C94B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8BF553EA2F59FEFD0051C94B /* Build configuration list for PBXNativeTarget "qbremoteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BF553EB2F59FEFD0051C94B /* Debug */,
+				8BF553EC2F59FEFD0051C94B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CAFED00D000000000000000C /* Build configuration list for PBXNativeTarget "qbremoteSnapshotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAFED00D000000000000000A /* Debug */,
+				CAFED00D000000000000000B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8BF553ED2F59FEFD0051C94B /* Build configuration list for PBXNativeTarget "qbremoteUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BF553EE2F59FEFD0051C94B /* Debug */,
+				8BF553EF2F59FEFD0051C94B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CAFED00D000000000000000D /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.18.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CAFED00D000000000000000E /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAFED00D000000000000000D /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8BF553B92F59FEFC0051C94B /* Project object */;
+}

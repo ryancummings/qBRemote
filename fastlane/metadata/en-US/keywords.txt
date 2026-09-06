@@ -1,0 +1,1 @@
+qbittorrent,torrent,remote,download,manager,client,seedbox,p2p,server,control
