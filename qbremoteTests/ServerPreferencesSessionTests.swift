@@ -10,9 +10,9 @@ struct ServerPreferencesSessionTests {
     @Test("Preference reads and writes recover authentication once", arguments: [false, true], [401, 403])
     func retry(saving: Bool, status: Int) async throws {
         let profile = ServerProfile(host: "selected.local", port: 8080)
-        KeychainService.savePassword("secret", for: profile.id)
-        KeychainService.saveCookie("saved", for: profile.id)
-        defer { KeychainService.deleteCredentials(for: profile.id) }
+        let credentials = MemorySessionCredentials()
+        credentials.passwords[profile.id] = "secret"
+        credentials.cookies[profile.id] = "saved"
         var attempts = 0
         var logins = 0
         let target = saving ? "setPreferences" : "preferences"
@@ -28,7 +28,7 @@ struct ServerPreferencesSessionTests {
             }
             return (200, prefsJSON, [:])
         }
-        let (viewModel, container) = try makeViewModel(profile, transport)
+        let (viewModel, container) = try makeViewModel(profile, transport, credentials: credentials)
         defer { withExtendedLifetime(container) {} }
         await viewModel.loadPreferences()
         if saving { #expect(await viewModel.savePreferences()) }
@@ -82,10 +82,10 @@ struct ServerPreferencesSessionTests {
           arguments: [false, true], [401, 403, 500, -1])
     func failure(saving: Bool, status: Int) async throws {
         let profile = ServerProfile(host: "localhost", port: 8080)
-        KeychainService.savePassword("secret", for: profile.id)
-        defer { KeychainService.deleteCredentials(for: profile.id) }
+        let credentials = MemorySessionCredentials()
+        credentials.passwords[profile.id] = "secret"
         let transport = SessionTransport { _ in (200, prefsJSON, [:]) }
-        let (viewModel, container) = try makeViewModel(profile, transport)
+        let (viewModel, container) = try makeViewModel(profile, transport, credentials: credentials)
         defer { withExtendedLifetime(container) {} }
         await viewModel.loadPreferences()
         viewModel.webUIPortString = "9090"
@@ -116,14 +116,15 @@ struct ServerPreferencesSessionTests {
     }
 
     private func makeViewModel(
-        _ profile: ServerProfile, _ transport: SessionTransport
+        _ profile: ServerProfile, _ transport: SessionTransport,
+        credentials: MemorySessionCredentials = MemorySessionCredentials()
     ) throws -> (ServerPreferencesViewModel, ModelContainer) {
         let container = try ModelContainer(for: ServerProfile.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         container.mainContext.insert(profile)
         let viewModel = ServerPreferencesViewModel()
         viewModel.configure(with: profile, context: container.mainContext, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
             QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
-        }))
+        }, credentials: credentials))
         return (viewModel, container)
     }
 }
