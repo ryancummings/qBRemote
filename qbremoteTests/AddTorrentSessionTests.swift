@@ -92,7 +92,7 @@ struct AddTorrentSessionTests {
             switch request.url?.path {
             case "/api/v2/app/defaultSavePath": return (200, "/Downloads", [:])
             case "/api/v2/torrents/categories":
-                return (200, "{\"media\":{\"name\":\"media\",\"savePath\":\"/archive\"},\"same\":{\"name\":\"same\",\"savePath\":\"/Downloads\"}}", [:])
+                return (200, "{\"media\":{\"name\":\"media\",\"save_path\":\"/archive\"},\"same\":{\"name\":\"same\",\"save_path\":\"/Downloads\"}}", [:])
             default: return (500, "", [:])
             }
         }
