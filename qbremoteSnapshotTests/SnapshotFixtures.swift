@@ -17,6 +17,7 @@ import SwiftData
 
 enum SnapshotFixtures {
 
+    @MainActor
     static var sessionFactory: QBServerSessionFactory {
         QBServerSessionFactory(makeService: { _, _ in MockQBittorrentAPIService(simulate: false) })
     }
