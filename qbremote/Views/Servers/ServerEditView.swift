@@ -10,39 +10,24 @@ struct ServerEditView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    // Local copy so we can preserve it if we save but don't dismiss
-    @State private var profile: ServerProfile?
-    @State private var isNew: Bool
+    @State private var draft: ServerProfileDraft
+    @State private var testTask: Task<Void, Never>?
+    @State private var showDeleteConfirmation = false
 
     init(profile: ServerProfile?, isNew: Bool) {
-        self._profile = State(initialValue: profile)
-        self._isNew = State(initialValue: isNew)
+        self._draft = State(initialValue: ServerProfileDraft(profile: profile))
     }
-
-    // Local form state
-    @State private var name: String = ""
-    @State private var host: String = ""
-    @State private var port: String = ""
-    @State private var username: String = "admin"
-    @State private var password: String = ""
-    @State private var useHTTPS: Bool = false
-    @State private var allowUntrustedSSL: Bool = false
-    @State private var pollingInterval: Double = 5.0
-
-    @State private var profilesVM = ServerProfilesViewModel()
-    @State private var isTestingConnection = false
-    @State private var showDeleteConfirmation = false
 
     var body: some View {
         List {
             // MARK: Connection
             Section {
-                TextField("Name (e.g., My Server)", text: $name)
+                TextField("Name (e.g., My Server)", text: $draft.name)
                     .textContentType(.name)
                     .submitLabel(.next)
                     .accessibilityIdentifier("server_name_field")
 
-                TextField("Host (192.168.1.100 or myserver.com)", text: $host)
+                TextField("Host (192.168.1.100 or myserver.com)", text: $draft.host)
                     .keyboardType(.URL)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
@@ -50,14 +35,14 @@ struct ServerEditView: View {
                     .submitLabel(.next)
                     .accessibilityIdentifier("server_host_field")
 
-                TextField("Port (Optional)", text: $port)
+                TextField("Port (Optional)", text: $draft.port)
                     .keyboardType(.numberPad)
                     .submitLabel(.next)
                     .accessibilityIdentifier("server_port_field")
 
-                Toggle("Use HTTPS", isOn: $useHTTPS)
-                if useHTTPS {
-                    Toggle("Allow Untrusted SSL", isOn: $allowUntrustedSSL)
+                Toggle("Use HTTPS", isOn: $draft.useHTTPS)
+                if draft.useHTTPS {
+                    Toggle("Allow Untrusted SSL", isOn: $draft.allowUntrustedSSL)
                 }
             } header: {
                 Text("Connection")
@@ -67,13 +52,13 @@ struct ServerEditView: View {
 
             // MARK: Credentials
             Section("Credentials") {
-                TextField("Username", text: $username)
+                TextField("Username", text: $draft.username)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .textContentType(.username)
                     .submitLabel(.next)
 
-                SecureField("Password", text: $password)
+                SecureField("Password", text: $draft.password)
                     .textContentType(.password)
                     .submitLabel(.done)
             }
@@ -84,11 +69,11 @@ struct ServerEditView: View {
                     HStack {
                         Text("Refresh Interval")
                         Spacer()
-                        Text("\(Int(pollingInterval))s")
+                        Text("\(Int(draft.pollingInterval))s")
                             .foregroundStyle(.secondary)
                             .monospacedDigit()
                     }
-                    Slider(value: $pollingInterval, in: 2...60, step: 1)
+                    Slider(value: $draft.pollingInterval, in: 2...60, step: 1)
                 }
             } header: {
                 Text("Polling")
@@ -102,18 +87,18 @@ struct ServerEditView: View {
                     testConnection()
                 } label: {
                     HStack {
-                        if isTestingConnection {
+                        if draft.isTestingConnection {
                             ProgressView()
                                 .padding(.trailing, 4)
                         }
-                        Text(isTestingConnection ? "Testing…" : "Test Connection")
+                        Text(draft.isTestingConnection ? "Testing…" : "Test Connection")
                     }
                 }
                 .accessibilityIdentifier("test_connection_button")
-                .disabled(host.isEmpty || isTestingConnection)
+                .disabled(draft.host.isEmpty || draft.isTestingConnection)
 
                 // Result feedback
-                switch profilesVM.connectionTestResult {
+                switch draft.connectionTestResult {
                 case .success(let msg):
                     Label(msg, systemImage: "checkmark.circle.fill")
                         .foregroundStyle(.green)
@@ -127,7 +112,7 @@ struct ServerEditView: View {
             }
             
             // MARK: Delete Server
-            if !isNew {
+            if !draft.isNew {
                 Section {
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
@@ -145,15 +130,12 @@ struct ServerEditView: View {
         .alert("Delete Server", isPresented: $showDeleteConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Delete", role: .destructive) {
-                if let profile = profile {
-                    profilesVM.delete(profile: profile)
-                    dismiss()
-                }
+                if draft.delete(in: modelContext) { dismiss() }
             }
         } message: {
             Text("Are you sure you want to delete this server profile?")
         }
-        .navigationTitle(isNew ? "Add Server" : "Edit Server")
+        .navigationTitle(draft.isNew ? "Add Server" : "Edit Server")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -161,81 +143,30 @@ struct ServerEditView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") { save() }
-                    .disabled(host.isEmpty || username.isEmpty)
+                    .disabled(!draft.canSave)
                     .accessibilityIdentifier("save_server_button")
             }
         }
-        .onAppear {
-            profilesVM.setModelContext(modelContext)
-            populateFromProfile()
+        .onDisappear { testTask?.cancel() }
+        .alert("Could Not Save Server", isPresented: Binding(
+            get: { draft.error != nil },
+            set: { if !$0 { draft.error = nil } }
+        )) {
+            Button("OK") { draft.error = nil }
+        } message: {
+            Text(draft.error ?? "Unknown error")
         }
         .presentationSizing(.form)
     }
 
     // MARK: - Helpers
 
-    private func populateFromProfile() {
-        guard let p = profile else { return }
-        name            = p.name
-        host            = p.host
-        if let pPort = p.port {
-            port = String(pPort)
-        } else {
-            port = ""
-        }
-        username        = p.username
-        useHTTPS        = p.useHTTPS
-        allowUntrustedSSL = p.allowUntrustedSSL
-        pollingInterval = p.pollingInterval
-        password        = KeychainService.loadPassword(for: p.id) ?? ""
-    }
-
     private func testConnection() {
-        // Save the profile first, update our local reference if it's new
-        save(dismissAfter: false)
-
-        profilesVM.resetTestResult()
-        isTestingConnection = true
-        Task {
-            await profilesVM.testConnection(
-                host: host,
-                port: Int(port),
-                useHTTPS: useHTTPS,
-                allowUntrustedSSL: allowUntrustedSSL,
-                username: username,
-                password: password
-            )
-            isTestingConnection = false
-        }
+        testTask?.cancel()
+        testTask = Task { await draft.testConnection() }
     }
 
-    private func save(dismissAfter: Bool = true) {
-        let portInt = Int(port)
-        if let existing = profile {
-            existing.name            = name
-            existing.host            = host
-            existing.port            = portInt
-            existing.username        = username
-            existing.useHTTPS        = useHTTPS
-            existing.allowUntrustedSSL = allowUntrustedSSL
-            existing.pollingInterval = pollingInterval
-            profilesVM.save(profile: existing, password: password)
-        } else {
-            let newProfile = ServerProfile(
-                name: name,
-                host: host,
-                port: portInt,
-                username: username,
-                useHTTPS: useHTTPS,
-                pollingInterval: pollingInterval,
-                allowUntrustedSSL: allowUntrustedSSL
-            )
-            profilesVM.insertNew(newProfile, password: password)
-            self.profile = newProfile
-            self.isNew = false
-        }
-        if dismissAfter {
-            dismiss()
-        }
+    private func save() {
+        if draft.save(in: modelContext) { dismiss() }
     }
 }
