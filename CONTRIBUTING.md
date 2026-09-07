@@ -16,9 +16,19 @@ Do not use a public issue for a security problem. Follow [SECURITY.md](SECURITY.
 4. Select the `qbremote` scheme and an iOS simulator.
 5. Run the app.
 
+Read [AGENTS.md](AGENTS.md) for module boundaries and test rules, and [CONTEXT.md](CONTEXT.md) for domain terms.
+
 The app needs no build secret. Use demo mode if you do not have a qBittorrent server.
 
 If you use a physical device, select your Apple development team. You can also change the bundle identifier for your local build.
+
+Use deterministic transport responses to test real networking. Use injected memory credentials for session workflows and `SnapshotFixtures` for visual scenarios. Keep simulator signing enabled when running tests.
+
+If concurrent simulator runners fail to launch, run the same test lane with one runner:
+
+```sh
+SCAN_PARALLEL_TESTING=false SCAN_MAX_CONCURRENT_SIMULATORS=1 SCAN_XCARGS='-jobs 2' fastlane test
+```
 
 ## Pull requests
 
