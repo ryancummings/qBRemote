@@ -29,7 +29,7 @@ struct ServerPreferencesSessionTests {
             return (200, prefsJSON, [:])
         }
         let (viewModel, container) = try makeViewModel(profile, transport)
-        _ = container
+        defer { withExtendedLifetime(container) {} }
         await viewModel.loadPreferences()
         if saving { #expect(await viewModel.savePreferences()) }
         #expect(attempts == 2)
@@ -59,7 +59,7 @@ struct ServerPreferencesSessionTests {
             return (200, prefsJSON, [:])
         }
         let (viewModel, container) = try makeViewModel(profile, transport)
-        _ = container
+        defer { withExtendedLifetime(container) {} }
         await viewModel.loadPreferences()
         #expect(!viewModel.hasConnectionSettingsChanged)
         if changeHTTPS { viewModel.preferences?.use_https = true } else { viewModel.webUIPortString = "9090" }
@@ -86,7 +86,7 @@ struct ServerPreferencesSessionTests {
         defer { KeychainService.deleteCredentials(for: profile.id) }
         let transport = SessionTransport { _ in (200, prefsJSON, [:]) }
         let (viewModel, container) = try makeViewModel(profile, transport)
-        _ = container
+        defer { withExtendedLifetime(container) {} }
         await viewModel.loadPreferences()
         viewModel.webUIPortString = "9090"
         let oldUpdated = profile.lastUpdated
@@ -121,9 +121,9 @@ struct ServerPreferencesSessionTests {
         let container = try ModelContainer(for: ServerProfile.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
         container.mainContext.insert(profile)
         let viewModel = ServerPreferencesViewModel()
-        viewModel.configure(with: profile, context: container.mainContext, injectedService: QBittorrentAPIService(
-            baseURL: try #require(profile.baseURL), transport: transport
-        ))
+        viewModel.configure(with: profile, context: container.mainContext, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }))
         return (viewModel, container)
     }
 }

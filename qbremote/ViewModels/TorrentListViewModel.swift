@@ -114,7 +114,6 @@ final class TorrentListViewModel {
     // MARK: - Polling
 
     private var pollingTask: Task<Void, Never>?
-    private var apiService: QBittorrentAPIServiceProtocol?
     private(set) var serverSession: QBServerSession?
     private var pollingInterval: Double = 5.0
 
@@ -124,14 +123,12 @@ final class TorrentListViewModel {
 
     // MARK: - Setup
 
-    func configure(with profile: ServerProfile, injectedService: QBittorrentAPIServiceProtocol? = nil) {
+    func configure(with profile: ServerProfile, sessionFactory: QBServerSessionFactory = QBServerSessionFactory()) {
         guard let url = profile.baseURL else { return }
-        let service = injectedService ?? QBittorrentAPIService(baseURL: url, allowUntrustedSSL: profile.allowUntrustedSSL)
 
         stopPolling()
-        self.serverSession = try? QBServerSession(profile: profile, service: service)
+        self.serverSession = try? sessionFactory.session(for: profile)
 
-        self.apiService        = service
         self.pollingInterval   = profile.pollingInterval
         self.activeServerName  = profile.name.isEmpty ? profile.host : profile.name
         self.activeServerURL   = url.absoluteString
@@ -251,20 +248,11 @@ final class TorrentListViewModel {
         pendingHashes.insert(torrent.hash)
         defer { pendingHashes.remove(torrent.hash) }
         do {
-            try await apiService?.setTorrentLocation(hashes: [torrent.hash], location: location)
+            try await serverSession?.run(.setTorrentLocation(hashes: [torrent.hash], location: location))
         } catch {
             self.error = error.localizedDescription
         }
         await fetchAll()
     }
 
-    // MARK: - Provide service reference for AddTorrentViewModel
-
-    func sessionForAdding() -> QBServerSession? {
-        serverSession
-    }
-
-    func apiServiceForAdding() -> QBittorrentAPIServiceProtocol? {
-        apiService
-    }
 }

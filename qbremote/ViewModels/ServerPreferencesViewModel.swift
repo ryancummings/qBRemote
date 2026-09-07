@@ -35,17 +35,12 @@ final class ServerPreferencesViewModel {
     var altUpLimitKBString: String = ""
     var altDlLimitKBString: String = ""
     
-    func configure(with profile: ServerProfile, context: ModelContext, injectedService: QBittorrentAPIServiceProtocol? = nil) {
+    func configure(with profile: ServerProfile, context: ModelContext, sessionFactory: QBServerSessionFactory = QBServerSessionFactory()) {
         self.profile = profile
         self.modelContext = context
         
-        var serviceToUse = injectedService
-        if serviceToUse == nil,
-           ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
-            serviceToUse = MockQBittorrentAPIService(simulate: false)
-        }
         do {
-            self.session = try QBServerSession(profile: profile, service: serviceToUse)
+            self.session = try sessionFactory.session(for: profile)
         } catch {
             self.session = nil
             self.error = error

@@ -44,7 +44,7 @@ enum QBError: LocalizedError {
 // MARK: - API Service
 
 @MainActor
-final class QBittorrentAPIService: QBittorrentAPIServiceProtocol {
+final class QBittorrentAPIService: QBSessionAdapter {
 
     // MARK: - State
 

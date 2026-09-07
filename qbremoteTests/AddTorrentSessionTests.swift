@@ -20,11 +20,11 @@ struct AddTorrentSessionTests {
                 ? (200, "Ok.", [:]) : (403, "", [:])
         }
         let list = TorrentListViewModel()
-        list.configure(with: profile, injectedService: QBittorrentAPIService(
-            baseURL: try #require(profile.baseURL), transport: transport
-        ))
+        list.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }))
         let model = AddTorrentViewModel()
-        model.configure(session: try #require(list.sessionForAdding()))
+        model.configure(session: try #require(list.serverSession))
         model.magnetURL = " \(url) "
         model.savePath = "/downloads/new folder"
         await model.submit()
@@ -56,9 +56,9 @@ struct AddTorrentSessionTests {
                 ? (200, "Ok.", [:]) : (401, "", [:])
         }
         let external = ExternalAddTorrentViewModel()
-        await external.prepare(profile: destination, injectedService: QBittorrentAPIService(
-            baseURL: try #require(destination.baseURL), transport: transport
-        ), credentials: credentials)
+        await external.prepare(profile: destination, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }, credentials: credentials))
         #expect(external.error == nil)
         #expect(transport.requests.count == 1)
         #expect(transport.requests.first?.value(forHTTPHeaderField: "Cookie") == "SID=saved")
