@@ -73,6 +73,16 @@ extension QBOperation where Value == Void {
     }
 }
 
+extension QBOperation where Value == Void {
+    static func addTorrentByURL(_ url: String, savePath: String) -> Self {
+        Self { try await $0.addTorrentByURL(url, savePath: savePath) }
+    }
+
+    static func addTorrentByData(_ data: Data, filename: String, savePath: String) -> Self {
+        Self { try await $0.addTorrentByData(data, filename: filename, savePath: savePath) }
+    }
+}
+
 // MARK: - Credentials
 
 @MainActor

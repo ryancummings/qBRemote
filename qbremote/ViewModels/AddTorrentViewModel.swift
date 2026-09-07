@@ -26,10 +26,10 @@ final class AddTorrentViewModel {
     var submissionState: AddTorrentState = .idle
     var savePathSuggestions: [String] = []
 
-    private weak var apiService: QBittorrentAPIServiceProtocol?
+    private var session: QBServerSession?
 
-    func configure(apiService: QBittorrentAPIServiceProtocol, initialURL: URL? = nil) {
-        self.apiService = apiService
+    func configure(session: QBServerSession, initialURL: URL? = nil) {
+        self.session = session
         if let url = initialURL {
             if url.isFileURL {
                 let accessed = url.startAccessingSecurityScopedResource()
@@ -57,13 +57,13 @@ final class AddTorrentViewModel {
     }
 
     func loadSavePathSuggestions() async {
-        guard let service = apiService else { return }
+        guard let session else { return }
         
         var suggestions: Set<String> = []
         
-        async let defaultPathTask = service.getDefaultSavePath()
-        async let categoriesTask = service.getTorrentCategories()
-        async let torrentsTask = service.getTorrents(filter: .all)
+        async let defaultPathTask = session.run(.defaultSavePath)
+        async let categoriesTask = session.run(.torrentCategories)
+        async let torrentsTask = session.run(.torrents())
         
         let (defaultPath, categories, torrents) = await (
             (try? defaultPathTask) ?? "",
@@ -91,7 +91,7 @@ final class AddTorrentViewModel {
     }
 
     func submit() async {
-        guard let service = apiService else {
+        guard let session else {
             submissionState = .failure("No active server connection.")
             return
         }
@@ -99,13 +99,13 @@ final class AddTorrentViewModel {
         do {
             switch mode {
             case .url:
-                try await service.addTorrentByURL(magnetURL.trimmingCharacters(in: .whitespaces), savePath: savePath)
+                try await session.run(.addTorrentByURL(magnetURL.trimmingCharacters(in: .whitespaces), savePath: savePath))
             case .file:
                 guard let data = selectedFileData, let name = selectedFilename else {
                     submissionState = .failure("No file selected.")
                     return
                 }
-                try await service.addTorrentByData(data, filename: name, savePath: savePath)
+                try await session.run(.addTorrentByData(data, filename: name, savePath: savePath))
             }
             submissionState = .success
         } catch let err as QBError {
