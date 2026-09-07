@@ -67,17 +67,7 @@ struct ServerPreferencesView: View {
         .onAppear {
             viewModel.configure(with: profile, context: modelContext)
             Task {
-                var passwordToUse: String? = KeychainService.loadPassword(for: profile.id)
-                if ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
-                    passwordToUse = "dummy"
-                }
-                
-                if let password = passwordToUse {
-                    await viewModel.loadPreferences(password: password)
-                } else {
-                    viewModel.errorMessage = "Could not load password from keychain."
-                    viewModel.showError = true
-                }
+                await viewModel.loadPreferences()
             }
         }
         .presentationSizing(.form)
@@ -85,23 +75,12 @@ struct ServerPreferencesView: View {
     
     private func performSave() {
         Task {
-            var passwordToUse: String? = KeychainService.loadPassword(for: profile.id)
-            if ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
-                passwordToUse = "dummy"
-            }
-            
-            if let password = passwordToUse {
-                let success = await viewModel.savePreferences(password: password)
-                if success {
-                    dismiss()
-                }
-            } else {
-                viewModel.errorMessage = "Could not load password from keychain."
-                viewModel.showError = true
+            if await viewModel.savePreferences() {
+                dismiss()
             }
         }
     }
-    
+
     @ViewBuilder
     private var preferencesForm: some View {
         // Connection

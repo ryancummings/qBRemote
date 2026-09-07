@@ -5,7 +5,7 @@
 
 import Foundation
 
-nonisolated struct ServerPreferences: Codable, Equatable {
+nonisolated struct ServerPreferences: Codable, Equatable, Sendable {
     // Connection
     var listen_port: Int?
     var upnp: Bool?

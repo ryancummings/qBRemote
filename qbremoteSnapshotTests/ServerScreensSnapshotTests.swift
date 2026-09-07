@@ -65,7 +65,7 @@ extension SnapshotSuite {
             let profile = try SnapshotFixtures.activeProfile()
             let viewModel = ServerPreferencesViewModel()
             viewModel.configure(with: profile, context: SnapshotFixtures.populatedContainer.mainContext)
-            await viewModel.loadPreferences(password: "dummy")
+            await viewModel.loadPreferences()
             assertScreenSnapshot(
                 ServerPreferencesView(profile: profile, viewModel: viewModel)
                     .modelContainer(SnapshotFixtures.populatedContainer),
