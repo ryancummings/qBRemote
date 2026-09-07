@@ -51,22 +51,19 @@ final class QBittorrentAPIService: QBittorrentAPIServiceProtocol {
     private(set) var baseURL: URL
     private var sessionCookie: String?
 
-    private let allowUntrustedSSL: Bool
-
-    private lazy var session: URLSession = {
-        let delegate = allowUntrustedSSL ? SSLBypassDelegate() : nil
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest  = 30   // increased for large initial sync
-        config.timeoutIntervalForResource = 60
-        config.httpCookieAcceptPolicy = .never   // manage cookies manually
-        return URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
-    }()
+    private let transport: any QBittorrentTransport
 
     // MARK: - Init
 
-    init(baseURL: URL, allowUntrustedSSL: Bool = false) {
+    init(
+        baseURL: URL,
+        allowUntrustedSSL: Bool = false,
+        transport: (any QBittorrentTransport)? = nil
+    ) {
         self.baseURL = baseURL
-        self.allowUntrustedSSL = allowUntrustedSSL
+        self.transport = transport ?? URLSessionQBittorrentTransport(
+            allowUntrustedSSL: allowUntrustedSSL
+        )
     }
 
     // MARK: - Session Cookie Management
@@ -239,9 +236,9 @@ final class QBittorrentAPIService: QBittorrentAPIServiceProtocol {
     }
 
     func getTorrentTags() async throws -> [String] {
-        let request = try authenticatedGET(url: baseURL.appending(path: "/api/v2/torrents/tags"))
-        let (data, _) = try await performRequest(request)
         do {
+            let request = try authenticatedGET(url: baseURL.appending(path: "/api/v2/torrents/tags"))
+            let (data, _) = try await performRequest(request)
             return try await decode([String].self, from: data)
         } catch {
             return []
@@ -289,12 +286,14 @@ final class QBittorrentAPIService: QBittorrentAPIServiceProtocol {
     @discardableResult
     private func performRequest(_ request: URLRequest, authenticated: Bool = true) async throws -> (Data, URLResponse) {
         do {
-            let (data, response) = try await session.data(for: request)
+            let (data, response) = try await transport.data(for: request)
             if authenticated, let http = response as? HTTPURLResponse {
                 if http.statusCode == 401 {
                     throw QBError.unauthorized
                 } else if http.statusCode == 403 {
                     throw QBError.forbidden
+                } else if http.statusCode >= 400 {
+                    throw QBError.requestFailed(http.statusCode)
                 }
             }
             return (data, response)
@@ -345,7 +344,8 @@ final class QBittorrentAPIService: QBittorrentAPIServiceProtocol {
 
 private extension String {
     var urlEncoded: String {
-        addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? self
+        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-._~"))
+        return addingPercentEncoding(withAllowedCharacters: allowed) ?? self
     }
     var utf8Data: Data { Data(utf8) }
 }
