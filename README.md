@@ -1,10 +1,51 @@
-# Simple qBittorrent Remote
+<p align="center">
+  <img src="qbremote/Assets.xcassets/AppIcon.appiconset/qbremote.png" width="100" height="100" alt="Simple qBittorrent Remote app icon">
+</p>
 
-Simple qBittorrent Remote is a native SwiftUI client for the qBittorrent Web API. It runs on iPhone and iPad.
+<h1 align="center">Simple qBittorrent Remote</h1>
 
-The app connects to a qBittorrent server that you control. It does not download torrent data to the iOS device.
+<p align="center">
+  Your qBittorrent server, at your fingertips.<br>
+  A native, open-source SwiftUI app for iPhone and iPad.
+</p>
 
-This project is independent. It is not affiliated with or endorsed by the qBittorrent project.
+<p align="center">
+  <a href="https://apps.apple.com/app/id6760194789">
+    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="48" alt="Download on the App Store">
+  </a>
+</p>
+
+<p align="center">
+  <a href="#screenshots">Screenshots</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#build-from-source">Build from source</a> ·
+  <a href="SUPPORT.md">Support</a> ·
+  <a href="CONTRIBUTING.md">Contribute</a>
+</p>
+
+Manage downloads, add torrents, and switch between servers without opening the Web UI.
+Your files stay on your computer or NAS. The app controls a qBittorrent server that you own and does not download torrent data to your iPhone or iPad.
+
+## Screenshots
+
+<p align="center">
+  <img src="qbremoteSnapshotTests/__Snapshots__/TorrentListSnapshotTests/torrentListPopulated.iPhone17Pro-light.png" width="30%" alt="iPhone torrent list in light mode with download progress, transfer speeds, search, and status filters">
+  &nbsp;
+  <img src="qbremoteSnapshotTests/__Snapshots__/TorrentDetailSnapshotTests/torrentDetailDownloading.iPhone17Pro-dark.png" width="30%" alt="iPhone torrent details in dark mode with transfer statistics and pause, category, tag, move, and delete actions">
+  &nbsp;
+  <img src="qbremoteSnapshotTests/__Snapshots__/ServerScreensSnapshotTests/serverListPopulated.iPhone17Pro-light.png" width="30%" alt="iPhone server picker with multiple saved server profiles and connection status">
+</p>
+
+<p align="center">Track downloads · Inspect torrent details · Switch servers</p>
+
+<details>
+  <summary>See the iPad layout</summary>
+  <p align="center">
+    <img src="qbremoteSnapshotTests/__Snapshots__/TorrentListSnapshotTests/torrentListPopulated.iPadPro13-light.png" width="640" alt="iPad torrent list with search, status filters, and transfer statistics across the wider display">
+  </p>
+</details>
+
+Screenshots show demo data from the repository's visual tests. The App Store version can differ from the current source.
 
 ## Features
 
@@ -17,15 +58,18 @@ This project is independent. It is not affiliated with or endorsed by the qBitto
 - Store passwords and session cookies in the iOS Keychain.
 - Use demo mode without a qBittorrent server.
 
-## Requirements
+## Get started
 
-- macOS with Xcode 26 or later.
-- iOS or iPadOS 26.1 or later.
-- A qBittorrent server with the Web UI enabled.
+1. [Download the app from the App Store](https://apps.apple.com/app/id6760194789) on an iPhone or iPad with iOS or iPadOS 26.1 or later.
+2. Enable the Web UI on your qBittorrent server.
+3. Add your server address and credentials in the app, then tap Save.
 
-The app target has no third-party runtime dependencies. The snapshot-test target uses `swift-snapshot-testing`.
+Test Connection checks the values before you save. To explore the app without a server, enable demo mode in Settings.
 
-## Run the app
+## Build from source
+
+You need macOS with Xcode 26 or later. The app target has no third-party runtime dependencies.
+The snapshot-test target uses `swift-snapshot-testing`.
 
 ```sh
 git clone https://github.com/ryancummings/qBRemote.git
@@ -36,10 +80,6 @@ open qbremote.xcodeproj
 Select the `qbremote` scheme and an iOS simulator. Then run the app.
 
 If you run the app on a physical device, select your development team in Xcode. Use a unique bundle identifier if your Apple account does not own `com.OneRadStudio.qbremote`.
-
-On first launch, add the address and credentials for your qBittorrent server. Test Connection checks the unsaved values without saving them. Save stores the profile and credentials, whether or not you test first.
-
-You can enable demo mode in Settings if you do not have a server available.
 
 ## Security notes
 
@@ -99,3 +139,5 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before you open a pull request. Use GitH
 Copyright 2026 Ryan Cummings.
 
 This project is available under the [MIT License](LICENSE).
+
+This project is independent. It is not affiliated with or endorsed by the qBittorrent project.
