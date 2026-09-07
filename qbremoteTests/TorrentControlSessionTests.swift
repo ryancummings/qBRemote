@@ -71,9 +71,9 @@ struct TorrentControlSessionTests {
         _ control: Control, firstStatus: Int, retryStatus: Int, expectedMutations: Int, expectedLogins: Int
     ) async throws {
         let profile = ServerProfile(host: "selected.local")
-        KeychainService.savePassword("secret", for: profile.id)
-        KeychainService.saveCookie("saved", for: profile.id)
-        defer { KeychainService.deleteCredentials(for: profile.id) }
+        let credentials = MemorySessionCredentials()
+        credentials.passwords[profile.id] = "secret"
+        credentials.cookies[profile.id] = "saved"
         let viewModel = TorrentListViewModel()
         let torrent = Torrent(hash: "target", name: "Target", state: .downloading, progress: 0, size: 100)
         var mutations = 0
@@ -101,7 +101,7 @@ struct TorrentControlSessionTests {
         }
         viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
             QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
-        }))
+        }, credentials: credentials))
         await control.perform(on: viewModel, torrent: torrent)
         #expect(mutations == expectedMutations)
         #expect(logins == expectedLogins)

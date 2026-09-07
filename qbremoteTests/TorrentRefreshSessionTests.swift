@@ -9,9 +9,9 @@ struct TorrentRefreshSessionTests {
     @Test("Active refresh restores authentication and publishes torrents and statistics")
     func refresh() async throws {
         let profile = ServerProfile(host: "localhost")
-        KeychainService.savePassword("test-password", for: profile.id)
-        KeychainService.saveCookie("expired", for: profile.id)
-        defer { KeychainService.deleteCredentials(for: profile.id) }
+        let credentials = MemorySessionCredentials()
+        credentials.passwords[profile.id] = "test-password"
+        credentials.cookies[profile.id] = "expired"
         var logins = 0
         let transport = SessionTransport { request in
             if request.url?.path == "/api/v2/auth/login" {
@@ -26,7 +26,7 @@ struct TorrentRefreshSessionTests {
         let viewModel = TorrentListViewModel()
         viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
             QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
-        }))
+        }, credentials: credentials))
         await viewModel.fetchAll()
         #expect(logins == 1)
         #expect(viewModel.torrents.isEmpty)
@@ -48,7 +48,7 @@ struct TorrentRefreshSessionTests {
         let viewModel = TorrentListViewModel()
         viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
             QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
-        }))
+        }, credentials: MemorySessionCredentials()))
         await viewModel.start(profile: profile)
         defer { viewModel.stopPolling() }
         #expect(transport.requests.count == 1)
@@ -71,10 +71,10 @@ struct TorrentRefreshSessionTests {
         let viewModel = TorrentListViewModel()
         viewModel.configure(with: oldProfile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
             QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
-        }))
+        }, credentials: MemorySessionCredentials()))
         let refresh = Task { await viewModel.fetchAll() }
         await started.wait()
-        viewModel.configure(with: newProfile, sessionFactory: QBServerSessionFactory(makeService: { _, _ in MockQBittorrentAPIService(simulate: false) }))
+        viewModel.configure(with: newProfile, sessionFactory: QBServerSessionFactory(makeService: { _, _ in MockQBittorrentAPIService(simulate: false) }, credentials: MemorySessionCredentials()))
         finish.open()
         await refresh.value
         #expect(viewModel.activeProfileId == newProfile.id)

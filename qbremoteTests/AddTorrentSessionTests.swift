@@ -9,9 +9,9 @@ struct AddTorrentSessionTests {
     ])
     func activeAddition(url: String) async throws {
         let profile = ServerProfile(host: "active.local", isActive: true)
-        KeychainService.saveCookie("expired", for: profile.id)
-        KeychainService.savePassword("password", for: profile.id)
-        defer { KeychainService.deleteCredentials(for: profile.id) }
+        let credentials = MemorySessionCredentials()
+        credentials.cookies[profile.id] = "expired"
+        credentials.passwords[profile.id] = "password"
         let transport = SessionTransport { request in
             if request.url?.path == "/api/v2/auth/login" {
                 return (200, "Ok.", ["Set-Cookie": "SID=fresh; Path=/"])
@@ -22,7 +22,7 @@ struct AddTorrentSessionTests {
         let list = TorrentListViewModel()
         list.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
             QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
-        }))
+        }, credentials: credentials))
         let model = AddTorrentViewModel()
         model.configure(session: try #require(list.serverSession))
         model.magnetURL = " \(url) "
@@ -34,7 +34,7 @@ struct AddTorrentSessionTests {
         #expect(additions.first?.value(forHTTPHeaderField: "Cookie") == "SID=expired")
         #expect(additions.last?.httpBody == additions.first?.httpBody)
         #expect(transport.requests.filter { $0.url?.path == "/api/v2/auth/login" }.count == 1)
-        #expect(KeychainService.loadCookie(for: profile.id) == "fresh")
+        #expect(credentials.cookies[profile.id] == "fresh")
         #expect(list.activeProfileId == profile.id)
     }
 
