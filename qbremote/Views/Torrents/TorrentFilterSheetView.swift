@@ -7,35 +7,27 @@
 import SwiftUI
 
 struct TorrentFilterSheetView: View {
-    @Bindable var torrentVM: TorrentListViewModel
+    @Bindable var browsing: TorrentBrowsing
     @Environment(\.dismiss) private var dismiss
     
-    @State private var availableCategories: [String] = []
-    @State private var availableTags: [String] = []
-    @State private var availableLocations: [String] = []
-    @State private var availableTrackers: [String] = []
-
     var body: some View {
         NavigationStack {
             Form {
                 // MARK: Active Filters Summary
                 Section {
                     Button("Clear All Filters", role: .destructive) {
-                        torrentVM.activeCategoryFilter = nil
-                        torrentVM.activeTagFilters.removeAll()
-                        torrentVM.activeLocationFilter = nil
-                        torrentVM.activeTrackerFilter = nil
+                        browsing.clearFilters()
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .disabled(!hasActiveFilters)
+                    .disabled(!browsing.hasActiveFilters)
                 }
                 
                 // MARK: Category Filter
                 Section("Category") {
-                    Picker("Category", selection: $torrentVM.activeCategoryFilter) {
+                    Picker("Category", selection: $browsing.activeCategoryFilter) {
                         Text("Any").tag(String?.none)
                         Text("None").tag(String?.some(""))
-                        ForEach(availableCategories, id: \.self) { cat in
+                        ForEach(browsing.availableCategories, id: \.self) { cat in
                             Text(cat).tag(String?.some(cat))
                         }
                     }
@@ -44,25 +36,25 @@ struct TorrentFilterSheetView: View {
                 
                 // MARK: Tags Filter
                 Section {
-                    if availableTags.isEmpty {
+                    if browsing.availableTags.isEmpty {
                         Text("No tags available")
                             .foregroundStyle(.secondary)
                     } else {
-                        Picker("Match Mode", selection: $torrentVM.tagFilterMatchAll) {
+                        Picker("Match Mode", selection: $browsing.tagFilterMatchAll) {
                             Text("Match All").tag(true)
                             Text("Match Any").tag(false)
                         }
                         .pickerStyle(.segmented)
                         .padding(.bottom, 4)
                         
-                        ForEach(availableTags, id: \.self) { tag in
+                        ForEach(browsing.availableTags, id: \.self) { tag in
                             Toggle(tag, isOn: Binding(
-                                get: { torrentVM.activeTagFilters.contains(tag) },
+                                get: { browsing.activeTagFilters.contains(tag) },
                                 set: { isOn in
                                     if isOn {
-                                        torrentVM.activeTagFilters.insert(tag)
+                                        browsing.activeTagFilters.insert(tag)
                                     } else {
-                                        torrentVM.activeTagFilters.remove(tag)
+                                        browsing.activeTagFilters.remove(tag)
                                     }
                                 }
                             ))
@@ -76,9 +68,9 @@ struct TorrentFilterSheetView: View {
                 
                 // MARK: Location Filter
                 Section("Download Location") {
-                    Picker("Location", selection: $torrentVM.activeLocationFilter) {
+                    Picker("Location", selection: $browsing.activeLocationFilter) {
                         Text("Any").tag(String?.none)
-                        ForEach(availableLocations, id: \.self) { loc in
+                        ForEach(browsing.availableLocations, id: \.self) { loc in
                             Text(loc).tag(String?.some(loc))
                         }
                     }
@@ -87,10 +79,10 @@ struct TorrentFilterSheetView: View {
                 
                 // MARK: Tracker Filter
                 Section("Tracker") {
-                    Picker("Tracker", selection: $torrentVM.activeTrackerFilter) {
+                    Picker("Tracker", selection: $browsing.activeTrackerFilter) {
                         Text("Any").tag(String?.none)
                         Text("None").tag(String?.some(""))
-                        ForEach(availableTrackers, id: \.self) { tracker in
+                        ForEach(browsing.availableTrackers, id: \.self) { tracker in
                             Text(tracker).tag(String?.some(tracker))
                         }
                     }
@@ -107,33 +99,5 @@ struct TorrentFilterSheetView: View {
                 }
             }
         }
-        .onAppear {
-            let base = torrentVM.torrents
-            
-            let cats = Set(base.map { $0.category }.filter { !$0.isEmpty })
-            availableCategories = Array(cats).sorted()
-            
-            var tags = Set<String>()
-            for torrent in base {
-                let split = torrent.tags.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.filter { !$0.isEmpty }
-                tags.formUnion(split)
-            }
-            availableTags = Array(tags).sorted()
-            
-            let locs = Set(base.map { $0.savePath }.filter { !$0.isEmpty })
-            availableLocations = Array(locs).sorted()
-            
-            let trackers = Set(base.map { $0.tracker }.filter { !$0.isEmpty })
-            availableTrackers = Array(trackers).sorted()
-        }
-    }
-    
-    // MARK: - Computed Properties for Available Options
-    
-    private var hasActiveFilters: Bool {
-        torrentVM.activeCategoryFilter != nil ||
-        !torrentVM.activeTagFilters.isEmpty ||
-        torrentVM.activeLocationFilter != nil ||
-        torrentVM.activeTrackerFilter != nil
     }
 }

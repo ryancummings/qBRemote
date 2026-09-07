@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct MoveTorrentView: View {
-    let apiService: QBittorrentAPIServiceProtocol?
+    let session: QBServerSession?
     let torrentHash: String
     let currentPath: String
     let onSuccess: () -> Void
@@ -92,8 +92,8 @@ struct MoveTorrentView: View {
             }
         }
         .onAppear {
-            if let service = apiService {
-                viewModel.configure(apiService: service, torrentHash: torrentHash, currentPath: currentPath)
+            if let session {
+                viewModel.configure(session: session, torrentHash: torrentHash, currentPath: currentPath)
                 Task {
                     await viewModel.loadSavePathSuggestions()
                 }

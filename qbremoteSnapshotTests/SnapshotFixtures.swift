@@ -17,6 +17,11 @@ import SwiftData
 
 enum SnapshotFixtures {
 
+    @MainActor
+    static var sessionFactory: QBServerSessionFactory {
+        QBServerSessionFactory(makeService: { _, _ in MockQBittorrentAPIService(simulate: false) })
+    }
+
     /// 2025-01-01 12:00:00 UTC — fixed epoch for all `addedOn` values.
     static let referenceEpoch = 1_735_732_800
 

@@ -12,7 +12,7 @@ This project is independent. It is not affiliated with or endorsed by the qBitto
 - Add magnet links, torrent URLs, and `.torrent` files.
 - Pause, resume, delete, move, categorize, and tag torrents.
 - Search, filter, and sort the torrent list.
-- View transfer rates, progress, files, trackers, and peers.
+- View transfer rates, progress, tracker details, and peer counts.
 - Change selected qBittorrent server preferences.
 - Store passwords and session cookies in the iOS Keychain.
 - Use demo mode without a qBittorrent server.
@@ -28,7 +28,7 @@ The app target has no third-party runtime dependencies. The snapshot-test target
 ## Run the app
 
 ```sh
-git clone https://github.com/ryancummings/qbRemote.git
+git clone https://github.com/ryancummings/qBRemote.git
 cd qBRemote
 open qbremote.xcodeproj
 ```
@@ -37,7 +37,9 @@ Select the `qbremote` scheme and an iOS simulator. Then run the app.
 
 If you run the app on a physical device, select your development team in Xcode. Use a unique bundle identifier if your Apple account does not own `com.OneRadStudio.qbremote`.
 
-On first launch, add the address and credentials for your qBittorrent server. You can enable demo mode in Settings if you do not have a server available.
+On first launch, add the address and credentials for your qBittorrent server. Test Connection checks the unsaved values without saving them. Save stores the profile and credentials, whether or not you test first.
+
+You can enable demo mode in Settings if you do not have a server available.
 
 ## Security notes
 
@@ -51,16 +53,23 @@ Read [SECURITY.md](SECURITY.md) before you report a security problem.
 
 ## Architecture
 
-The app uses SwiftUI, SwiftData, Observation, `URLSession`, and Swift concurrency. It uses a small MVVM structure:
+The app uses SwiftUI, SwiftData, Observation, `URLSession`, and Swift concurrency. Network workflows use typed server sessions:
 
 ```text
 View
   -> @Observable view model
-    -> QBittorrentAPIServiceProtocol
-      -> live API service or deterministic mock service
+    -> QBServerSession.run(QBOperation)
+      -> production API service -> URLSession or test transport
+      -> demo adapter
 ```
 
-`ServerProfile` stores non-secret server configuration. `KeychainService` stores secrets for each profile UUID. `TorrentListViewModel` owns the polling loop and retries authentication after an expired session.
+A server session represents access to one saved profile. It owns cookie restoration, shared login attempts, one authentication retry, and connection status. `TorrentListViewModel` owns refresh orchestration, polling, and torrent actions. External additions can target another profile without changing the active server.
+
+`ServerProfile` stores non-secret configuration. `ServerProfileDraft` owns editing, unsaved connection tests, explicit saves, and credential rollback when persistence fails. `KeychainService` stores secrets by profile UUID.
+
+`TorrentBrowsing` derives results and available filter options from the latest torrents. Server switches preserve search and sorting but clear category, tag, location, and tracker selections. Polling retains selections that disappear from the available options. Browsing choices stay in memory only.
+
+Read the [domain glossary](CONTEXT.md), [typed-session decision](docs/adr/0001-use-typed-operations-for-server-sessions.md), and [implementation rules](AGENTS.md) before changing these boundaries.
 
 ## Tests
 

@@ -15,11 +15,12 @@ struct TorrentListView: View {
     @State private var showFilterSheet = false
 
     var body: some View {
+        @Bindable var browsing = torrentVM.browsing
         VStack(spacing: 0) {
             // Fixed Top Bar explicitly in layout instead of relying on safeAreaInset which is buggy with ScrollViews on iOS 17
             VStack(spacing: 0) {
                 FilterPickerView(
-                    activeFilter: $torrentVM.activeFilter,
+                    activeFilter: $browsing.activeFilter,
                     connectionStateID: "\(torrentVM.activeServerURL)-\(torrentVM.connectionStatus.label)"
                 )
                 Divider()
@@ -41,7 +42,7 @@ struct TorrentListView: View {
                     Text("•")
                         .foregroundStyle(.secondary)
                     
-                    Text("\(torrentVM.filteredTorrents.count) torrents")
+                    Text("\(torrentVM.browsing.filteredTorrents.count) torrents")
                         .foregroundStyle(.secondary)
                 }
                 .font(.caption.weight(.medium))
@@ -55,7 +56,7 @@ struct TorrentListView: View {
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $torrentVM.searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search torrents")
+        .searchable(text: $browsing.searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search torrents")
         .toolbar {
             // Connection status dot — top-left
             ToolbarItem(placement: .navigationBarLeading) {
@@ -65,7 +66,7 @@ struct TorrentListView: View {
             // Primary Actions — top-right (Sort, Add)
             ToolbarItemGroup(placement: .primaryAction) {
                 Menu {
-                    Picker("Sort By", selection: $torrentVM.activeSortOption) {
+                    Picker("Sort By", selection: $browsing.activeSortOption) {
                         ForEach(TorrentSortOption.allCases) { option in
                             Label(option.rawValue, systemImage: option.icon)
                                 .tag(option)
@@ -75,18 +76,17 @@ struct TorrentListView: View {
                     Divider()
                     
                     Button {
-                        torrentVM.sortAscending.toggle()
+                        torrentVM.browsing.sortAscending.toggle()
                     } label: {
-                        Label(torrentVM.sortAscending ? "Ascending" : "Descending",
-                              systemImage: torrentVM.sortAscending ? "arrow.up" : "arrow.down")
+                        Label(torrentVM.browsing.sortAscending ? "Ascending" : "Descending",
+                              systemImage: torrentVM.browsing.sortAscending ? "arrow.up" : "arrow.down")
                     }
                 } label: {
                     Label("Sort Torrents", systemImage: "arrow.up.arrow.down")
                 }
                 
                 Button { showFilterSheet = true } label: {
-                    let hasActiveFilters = torrentVM.activeCategoryFilter != nil || !torrentVM.activeTagFilters.isEmpty || torrentVM.activeLocationFilter != nil || torrentVM.activeTrackerFilter != nil
-                    Label("Advanced Filters", systemImage: hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
+                    Label("Advanced Filters", systemImage: torrentVM.browsing.hasActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease.circle")
                 }
                 
                 Button { showAddTorrent = true } label: {
@@ -98,7 +98,7 @@ struct TorrentListView: View {
             NavigationStack {
                 TorrentDetailView(
                     torrent: torrent,
-                    apiService: torrentVM.apiServiceForAdding(),
+                    session: torrentVM.serverSession,
                     onPause:  { Task { await torrentVM.pause(torrent: torrent) } },
                     onResume: { Task { await torrentVM.resume(torrent: torrent) } },
                     onDelete: { deleteFiles in Task { await torrentVM.delete(torrent: torrent, deleteFiles: deleteFiles) } },
@@ -110,7 +110,7 @@ struct TorrentListView: View {
         }
         .sheet(isPresented: $showAddTorrent) {
             NavigationStack {
-                AddTorrentView(apiService: torrentVM.apiServiceForAdding()) {
+                AddTorrentView(session: torrentVM.serverSession) {
                     Task { await torrentVM.fetchAll() }
                 }
             }
@@ -118,7 +118,7 @@ struct TorrentListView: View {
             .presentationSizing(.form)
         }
         .sheet(isPresented: $showFilterSheet) {
-            TorrentFilterSheetView(torrentVM: torrentVM)
+            TorrentFilterSheetView(browsing: torrentVM.browsing)
                 .presentationDragIndicator(.visible)
                 .presentationSizing(.form)
         }
@@ -156,16 +156,16 @@ struct TorrentListView: View {
                 connectionErrorView(errorMsg)
                     .zIndex(2)
 
-            } else if torrentVM.filteredTorrents.isEmpty {
+            } else if torrentVM.browsing.filteredTorrents.isEmpty {
                 // Empty state but filters still showed above
                 VStack(spacing: 12) {
                     Spacer()
-                    Image(systemName: torrentVM.searchQuery.isEmpty ? "tray" : "magnifyingglass")
+                    Image(systemName: torrentVM.browsing.searchQuery.isEmpty ? "tray" : "magnifyingglass")
                         .font(.system(size: 48))
                         .foregroundStyle(.secondary)
-                    Text(torrentVM.searchQuery.isEmpty
-                         ? "No \(torrentVM.activeFilter == .all ? "" : torrentVM.activeFilter.rawValue.lowercased() + " ")torrents"
-                         : "No results for \"\(torrentVM.searchQuery)\"")
+                    Text(torrentVM.browsing.searchQuery.isEmpty
+                         ? "No \(torrentVM.browsing.activeFilter == .all ? "" : torrentVM.browsing.activeFilter.rawValue.lowercased() + " ")torrents"
+                         : "No results for \"\(torrentVM.browsing.searchQuery)\"")
                         .font(.headline)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -229,7 +229,7 @@ struct TorrentListView: View {
                 .listRowBackground(Color.orange.opacity(0.1))
             }
 
-            ForEach(torrentVM.filteredTorrents) { torrent in
+            ForEach(torrentVM.browsing.filteredTorrents) { torrent in
                 Button {
                     selectedTorrent = torrent
                 } label: {

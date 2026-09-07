@@ -47,11 +47,6 @@ final class ServerProfile {
     }
 
     var baseURL: URL? {
-        let scheme = useHTTPS ? "https" : "http"
-        if let port {
-            return URL(string: "\(scheme)://\(host):\(port)")
-        } else {
-            return URL(string: "\(scheme)://\(host)")
-        }
+        QBServerURL.make(host: host, port: port, useHTTPS: useHTTPS)
     }
 }
