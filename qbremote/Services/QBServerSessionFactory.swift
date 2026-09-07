@@ -17,8 +17,7 @@ struct QBServerConnection {
     let username: String
 
     var baseURL: URL? {
-        let scheme = useHTTPS ? "https" : "http"
-        return URL(string: "\(scheme)://\(host)\(port.map { ":\($0)" } ?? "")")
+        QBServerURL.make(host: host, port: port, useHTTPS: useHTTPS)
     }
 }
 
