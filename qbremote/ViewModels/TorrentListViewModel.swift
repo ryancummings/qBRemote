@@ -115,7 +115,7 @@ final class TorrentListViewModel {
 
     private var pollingTask: Task<Void, Never>?
     private var apiService: QBittorrentAPIServiceProtocol?
-    private var serverSession: QBServerSession?
+    private(set) var serverSession: QBServerSession?
     private var pollingInterval: Double = 5.0
 
     isolated deinit {

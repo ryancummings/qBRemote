@@ -98,7 +98,7 @@ struct TorrentListView: View {
             NavigationStack {
                 TorrentDetailView(
                     torrent: torrent,
-                    apiService: torrentVM.apiServiceForAdding(),
+                    session: torrentVM.serverSession,
                     onPause:  { Task { await torrentVM.pause(torrent: torrent) } },
                     onResume: { Task { await torrentVM.resume(torrent: torrent) } },
                     onDelete: { deleteFiles in Task { await torrentVM.delete(torrent: torrent, deleteFiles: deleteFiles) } },

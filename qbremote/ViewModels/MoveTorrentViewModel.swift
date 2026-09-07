@@ -17,11 +17,11 @@ final class MoveTorrentViewModel {
     var savePathSuggestions: [String] = []
     var submissionState: MoveTorrentState = .idle
     
-    private weak var apiService: QBittorrentAPIServiceProtocol?
+    private var session: QBServerSession?
     private var torrentHash: String = ""
     
-    func configure(apiService: QBittorrentAPIServiceProtocol, torrentHash: String, currentPath: String) {
-        self.apiService = apiService
+    func configure(session: QBServerSession, torrentHash: String, currentPath: String) {
+        self.session = session
         self.torrentHash = torrentHash
         self.savePath = currentPath
         self.initialSavePath = currentPath
@@ -32,13 +32,13 @@ final class MoveTorrentViewModel {
     }
     
     func loadSavePathSuggestions() async {
-        guard let service = apiService else { return }
+        guard let session else { return }
         
         var suggestions: Set<String> = []
         
-        async let defaultPathTask = service.getDefaultSavePath()
-        async let categoriesTask = service.getTorrentCategories()
-        async let torrentsTask = service.getTorrents(filter: .all)
+        async let defaultPathTask = session.run(.defaultSavePath)
+        async let categoriesTask = session.run(.torrentCategories)
+        async let torrentsTask = session.run(.torrents(filter: .all))
         
         let (defaultPath, categories, torrents) = await (
             (try? defaultPathTask) ?? "",
@@ -66,13 +66,13 @@ final class MoveTorrentViewModel {
     }
     
     func submit() async {
-        guard let service = apiService else {
+        guard let session else {
             submissionState = .failure("No active server connection.")
             return
         }
         submissionState = .submitting
         do {
-            try await service.setTorrentLocation(hashes: [torrentHash], location: savePath)
+            try await session.run(.setTorrentLocation(hashes: [torrentHash], location: savePath))
             submissionState = .success
         } catch let err as QBError {
             submissionState = .failure(err.errorDescription ?? "Unknown error")

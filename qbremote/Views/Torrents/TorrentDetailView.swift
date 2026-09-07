@@ -7,7 +7,7 @@ import SwiftUI
 
 struct TorrentDetailView: View {
     let torrent: Torrent
-    let apiService: QBittorrentAPIServiceProtocol?
+    let session: QBServerSession?
     let onPause: () -> Void
     let onResume: () -> Void
     let onDelete: (Bool) -> Void
@@ -93,7 +93,7 @@ struct TorrentDetailView: View {
         }
         .sheet(isPresented: $showMoveSheet) {
             MoveTorrentView(
-                apiService: apiService,
+                session: session,
                 torrentHash: torrent.hash,
                 currentPath: torrent.savePath,
                 onSuccess: {
@@ -106,7 +106,7 @@ struct TorrentDetailView: View {
         }
         .sheet(isPresented: $showCategorySheet) {
             SetCategoryView(
-                apiService: apiService,
+                session: session,
                 torrentHash: torrent.hash,
                 currentCategory: torrent.category,
                 onSuccess: {
@@ -116,7 +116,7 @@ struct TorrentDetailView: View {
         }
         .sheet(isPresented: $showTagsSheet) {
             SetTagsView(
-                apiService: apiService,
+                session: session,
                 torrentHash: torrent.hash,
                 currentTags: torrent.tags,
                 onSuccess: {

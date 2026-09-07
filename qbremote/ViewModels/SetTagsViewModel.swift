@@ -19,11 +19,11 @@ final class SetTagsViewModel {
     var submissionState: SetTagsState = .idle
     var inputText: String = ""
     
-    private weak var apiService: QBittorrentAPIServiceProtocol?
+    private var session: QBServerSession?
     private var torrentHash: String = ""
     
-    func configure(apiService: QBittorrentAPIServiceProtocol, torrentHash: String, currentTagsString: String) {
-        self.apiService = apiService
+    func configure(session: QBServerSession, torrentHash: String, currentTagsString: String) {
+        self.session = session
         self.torrentHash = torrentHash
         
         let parsed = currentTagsString
@@ -36,9 +36,9 @@ final class SetTagsViewModel {
     }
     
     func loadTagSuggestions() async {
-        guard let service = apiService else { return }
+        guard let session else { return }
         do {
-            let tags = try await service.getTorrentTags()
+            let tags = try await session.run(.torrentTags)
             self.tagSuggestions = tags.sorted(by: { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending })
         } catch {
             // Silently fail, just means no suggestions
@@ -59,7 +59,7 @@ final class SetTagsViewModel {
     }
     
     func submit() async {
-        guard let service = apiService else {
+        guard let session else {
             submissionState = .failure("No active server connection.")
             return
         }
@@ -71,11 +71,11 @@ final class SetTagsViewModel {
         
         do {
             if !tagsToAdd.isEmpty {
-                try await service.addTorrentTags(hashes: [torrentHash], tags: tagsToAdd)
+                try await session.run(.addTorrentTags(hashes: [torrentHash], tags: tagsToAdd))
             }
             
             if !tagsToRemove.isEmpty {
-                try await service.removeTorrentTags(hashes: [torrentHash], tags: tagsToRemove)
+                try await session.run(.removeTorrentTags(hashes: [torrentHash], tags: tagsToRemove))
             }
             
             submissionState = .success

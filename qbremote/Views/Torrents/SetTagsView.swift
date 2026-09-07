@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SetTagsView: View {
-    let apiService: QBittorrentAPIServiceProtocol?
+    let session: QBServerSession?
     let torrentHash: String
     let currentTags: String
     let onSuccess: () -> Void
@@ -125,8 +125,8 @@ struct SetTagsView: View {
             }
         }
         .onAppear {
-            if let service = apiService {
-                viewModel.configure(apiService: service, torrentHash: torrentHash, currentTagsString: currentTags)
+            if let session {
+                viewModel.configure(session: session, torrentHash: torrentHash, currentTagsString: currentTags)
                 Task {
                     await viewModel.loadTagSuggestions()
                 }
