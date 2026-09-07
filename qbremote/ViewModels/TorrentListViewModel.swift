@@ -6,38 +6,6 @@
 import Foundation
 import Combine
 
-// MARK: - Connection Status
-
-enum ConnectionStatus: Equatable {
-    case connecting
-    case connected
-    case error(String)
-
-    var color: String {
-        switch self {
-        case .connecting: return "orange"
-        case .connected:  return "green"
-        case .error:      return "red"
-        }
-    }
-
-    var label: String {
-        switch self {
-        case .connecting:     return "Connecting…"
-        case .connected:      return "Connected"
-        case .error(let msg): return msg
-        }
-    }
-
-    var systemImage: String {
-        switch self {
-        case .connecting: return "circle.dotted"
-        case .connected:  return "checkmark.circle.fill"
-        case .error:      return "exclamationmark.circle.fill"
-        }
-    }
-}
-
 // MARK: - ViewModel
 
 @Observable
@@ -49,7 +17,12 @@ final class TorrentListViewModel {
     var stats: GlobalStats?
     var isLoading: Bool = false
     var error: String?
-    var connectionStatus: ConnectionStatus = .connecting
+    var connectionStatus: ConnectionStatus {
+        get { previewConnectionStatus ?? serverSession?.connectionStatus ?? .connecting }
+        set { previewConnectionStatus = newValue }
+    }
+    // Static demo and snapshot fixtures can provide a status without running a session.
+    private var previewConnectionStatus: ConnectionStatus?
     var lastUpdated: Date?
     var activeServerName: String = ""
     var activeServerURL: String = ""
@@ -142,7 +115,12 @@ final class TorrentListViewModel {
 
     private var pollingTask: Task<Void, Never>?
     private var apiService: QBittorrentAPIServiceProtocol?
+    private var serverSession: QBServerSession?
     private var pollingInterval: Double = 5.0
+
+    isolated deinit {
+        pollingTask?.cancel()
+    }
 
     // MARK: - Setup
 
@@ -150,9 +128,8 @@ final class TorrentListViewModel {
         guard let url = profile.baseURL else { return }
         let service = injectedService ?? QBittorrentAPIService(baseURL: url, allowUntrustedSSL: profile.allowUntrustedSSL)
 
-        if let savedCookie = KeychainService.loadCookie(for: profile.id), !savedCookie.isEmpty {
-            service.setSessionCookie(savedCookie)
-        }
+        stopPolling()
+        self.serverSession = try? QBServerSession(profile: profile, service: service)
 
         self.apiService        = service
         self.pollingInterval   = profile.pollingInterval
@@ -160,7 +137,7 @@ final class TorrentListViewModel {
         self.activeServerURL   = url.absoluteString
         self.activeProfileId   = profile.id
         self.activeUsername    = profile.username
-        self.connectionStatus  = .connecting
+        self.previewConnectionStatus = nil
         self.lastUpdated       = nil
         self.torrents          = []
         self.stats             = nil
@@ -169,57 +146,33 @@ final class TorrentListViewModel {
 
     /// Authenticate and start polling. Call this when a server is first selected.
     func start(profile: ServerProfile) async {
-        guard let service = apiService else { return }
-
-        isLoading = torrents.isEmpty
-        connectionStatus = .connecting
-
-        // Try to validate existing cookie first
+        guard activeProfileId == profile.id, let session = serverSession else { return }
         isLoading = true
         do {
-            let _ = try await service.getGlobalStats()
+            _ = try await session.run(.globalStats)
+            try await Task.sleep(for: .milliseconds(300))
+            guard serverSession === session else { return }
+            startPolling()
+        } catch is CancellationError {
+            if serverSession === session { isLoading = false }
         } catch {
-            // Cookie expired — re-authenticate
-            guard let password = KeychainService.loadPassword(for: profile.id) else {
-                let msg = "No password stored. Please re-enter credentials."
-                self.error = msg
-                self.connectionStatus = .error(msg)
-                self.isLoading = false
-                return
-            }
-            do {
-                let sid = try await service.login(username: profile.username, password: password)
-                if !sid.isEmpty {
-                    KeychainService.saveCookie(sid, for: profile.id)
-                }
-            } catch let qbErr as QBError {
-                let msg = qbErr.errorDescription ?? "Login failed"
-                self.error = msg
-                self.connectionStatus = .error(msg)
-                self.isLoading = false
-                return
-            } catch {
-                let msg = error.localizedDescription
-                self.error = msg
-                self.connectionStatus = .error(msg)
-                self.isLoading = false
-                return
-            }
+            guard serverSession === session else { return }
+            self.error = error.localizedDescription
+            self.isLoading = false
         }
-
-        self.connectionStatus = .connected
-        try? await Task.sleep(for: .milliseconds(300))
-        
-        startPolling()
     }
 
     func startPolling() {
         stopPolling()
         pollingTask = Task { [weak self] in
-            guard let self else { return }
             while !Task.isCancelled {
-                await self.fetchAll()
-                try? await Task.sleep(for: .seconds(self.pollingInterval))
+                guard let interval = self?.pollingInterval else { return }
+                await self?.fetchAll()
+                do {
+                    try await Task.sleep(for: .seconds(interval))
+                } catch {
+                    return
+                }
             }
         }
     }
@@ -233,57 +186,29 @@ final class TorrentListViewModel {
 
     func fetchAll() async {
 
-        guard let service = apiService else { return }
+        guard let session = serverSession else { return }
         isLoading = torrents.isEmpty
-        defer { isLoading = false }
+        defer { if serverSession === session { isLoading = false } }
         do {
-            async let t = service.getTorrents(filter: .all)
-            async let s = service.getGlobalStats()
-            (torrents, stats) = try await (t, s)
+            async let fetchedTorrents = session.run(.torrents(filter: .all))
+            async let fetchedStats = session.run(.globalStats)
+            let result = try await (fetchedTorrents, fetchedStats)
+            try Task.checkCancellation()
+            guard serverSession === session else { return }
+            (torrents, stats) = result
             error = nil
             lastUpdated = .now
-            connectionStatus = .connected
-        } catch let qbErr as QBError {
-            let isAuthError: Bool
-            switch qbErr {
-            case .unauthorized, .forbidden: isAuthError = true
-            default: isAuthError = false
-            }
-            
-            if isAuthError,
-               let profileId = activeProfileId,
-               let username = activeUsername,
-               let password = KeychainService.loadPassword(for: profileId) {
-                do {
-                    let sid = try await service.login(username: username, password: password)
-                    if !sid.isEmpty { KeychainService.saveCookie(sid, for: profileId) }
-                    
-                    // Retry fetch after successful re-auth
-                    async let t = service.getTorrents(filter: .all)
-                    async let s = service.getGlobalStats()
-                    (torrents, stats) = try await (t, s)
-                    error = nil
-                    lastUpdated = .now
-                    connectionStatus = .connected
-                    return
-                } catch {
-                    // Auto-login failed
-                    let msg = error.localizedDescription
-                    self.error = msg
-                    self.connectionStatus = .error(msg)
-                    stopPolling()
-                }
-            } else {
-                let msg = qbErr.errorDescription ?? "Unknown error"
-                error = msg
-                connectionStatus = .error(msg)
-                if case .unauthorized = qbErr { stopPolling() }
-                if case .forbidden = qbErr { stopPolling() }
-            }
+        } catch is CancellationError {
+            return
         } catch {
-            let msg = error.localizedDescription
-            self.error = msg
-            self.connectionStatus = .error(msg)
+            guard serverSession === session else { return }
+            self.error = error.localizedDescription
+            if let qbError = error as? QBError {
+                switch qbError {
+                case .unauthorized, .forbidden, .loginFailed: stopPolling()
+                default: break
+                }
+            }
         }
     }
 

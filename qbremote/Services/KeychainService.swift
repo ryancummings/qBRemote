@@ -38,6 +38,10 @@ enum KeychainService {
         load(key: cookieKey(for: serverID))
     }
 
+    static func deleteCookie(for serverID: UUID) {
+        delete(key: cookieKey(for: serverID))
+    }
+
     static func deleteCredentials(for serverID: UUID) {
         delete(key: passwordKey(for: serverID))
         delete(key: cookieKey(for: serverID))
