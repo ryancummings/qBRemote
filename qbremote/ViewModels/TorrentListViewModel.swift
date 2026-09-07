@@ -218,7 +218,7 @@ final class TorrentListViewModel {
         pendingHashes.insert(torrent.hash)
         defer { pendingHashes.remove(torrent.hash) }
         do {
-            try await apiService?.pauseTorrents(hashes: [torrent.hash])
+            try await serverSession?.run(.pauseTorrents(hashes: [torrent.hash]))
         } catch {
             self.error = error.localizedDescription
         }
@@ -229,7 +229,7 @@ final class TorrentListViewModel {
         pendingHashes.insert(torrent.hash)
         defer { pendingHashes.remove(torrent.hash) }
         do {
-            try await apiService?.resumeTorrents(hashes: [torrent.hash])
+            try await serverSession?.run(.resumeTorrents(hashes: [torrent.hash]))
         } catch {
             self.error = error.localizedDescription
         }
@@ -240,7 +240,7 @@ final class TorrentListViewModel {
         pendingHashes.insert(torrent.hash)
         defer { pendingHashes.remove(torrent.hash) }
         do {
-            try await apiService?.deleteTorrents(hashes: [torrent.hash], deleteFiles: deleteFiles)
+            try await serverSession?.run(.deleteTorrents(hashes: [torrent.hash], deleteFiles: deleteFiles))
         } catch {
             self.error = error.localizedDescription
         }

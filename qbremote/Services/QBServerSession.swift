@@ -23,6 +23,20 @@ extension QBOperation where Value == GlobalStats {
     }
 }
 
+extension QBOperation where Value == Void {
+    static func pauseTorrents(hashes: [String]) -> Self {
+        Self { try await $0.pauseTorrents(hashes: hashes) }
+    }
+
+    static func resumeTorrents(hashes: [String]) -> Self {
+        Self { try await $0.resumeTorrents(hashes: hashes) }
+    }
+
+    static func deleteTorrents(hashes: [String], deleteFiles: Bool = false) -> Self {
+        Self { try await $0.deleteTorrents(hashes: hashes, deleteFiles: deleteFiles) }
+    }
+}
+
 // MARK: - Credentials
 
 @MainActor
