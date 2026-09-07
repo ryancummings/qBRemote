@@ -2,5 +2,5 @@
 
 ## Claude Code adapter
 
-- `AGENTS.md` is the canonical shared guidance for this repository.
-- Put shared corrections in `AGENTS.md`; keep only Claude-specific behavior here.
+[AGENTS.md](AGENTS.md) contains the shared repository guidance.
+Put shared corrections there. Keep only Claude-specific instructions in this file.

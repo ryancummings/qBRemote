@@ -1,35 +1,11 @@
-# Domain Docs
+# Domain documentation
 
-How the engineering skills should consume this repo's domain documentation when exploring the codebase.
+Before exploring the code or changing domain documentation, read [CONTEXT.md](../../CONTEXT.md).
+Then read any relevant [architecture decisions](../adr/).
+An architecture decision records a design choice and its reason.
 
-## Before exploring, read these
+Use the glossary's terms in issue titles, proposals, tests, and documentation.
+If a needed term is missing, use the `domain-modeling` skill to define it when the work requires that decision.
+If a glossary or decision file is absent, continue without creating a placeholder.
 
-- **`CONTEXT.md`** at the repo root.
-- **`docs/adr/`**: read ADRs that touch the area you're about to work in.
-
-If any of these files don't exist, **proceed silently**. Don't flag their absence or suggest creating them upfront. The `/domain-modeling` skill creates them lazily when terms or decisions actually get resolved.
-
-## File structure
-
-This is a single-context repository:
-
-```text
-/
-├── CONTEXT.md
-├── docs/adr/
-│   ├── 0001-use-typed-operations-for-server-sessions.md
-│   └── ...
-└── qbremote/
-```
-
-## Use the glossary's vocabulary
-
-When output names a domain concept—in an issue title, refactor proposal, hypothesis, or test name—use the term defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
-
-If a needed concept isn't in the glossary, reconsider whether the language belongs to the project or note the gap for `/domain-modeling`.
-
-## Flag ADR conflicts
-
-If output contradicts an existing ADR, surface it explicitly instead of silently overriding it:
-
-> _Contradicts ADR-0007, but worth reopening because…_
+If a proposed change conflicts with a recorded decision, name the decision and explain the conflict.

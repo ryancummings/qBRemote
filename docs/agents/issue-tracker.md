@@ -1,45 +1,78 @@
 # Issue tracker: GitHub
 
-Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
+Use GitHub Issues for repository bugs, feature requests, and specs.
+Follow global project guidance for private task tracking.
+Run `gh` from this checkout so it selects the repository from the Git remote.
 
-## Conventions
+## Read issues and pull requests
 
-- **Create an issue**: `gh issue create --title "..." --body "..."`. For multi-line bodies, write the exact Markdown to a temporary file and pass `--body-file <path>`.
-- **Read an issue**: `gh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
-- **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.
-- **Comment on an issue**: `gh issue comment <number> --body "..."`
-- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
-- **Close**: `gh issue close <number> --comment "..."`
+Read an issue and its comments:
 
-Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
+```sh
+gh issue view <number> --comments
+```
 
-## Pull requests as a triage surface
+For structured output that includes labels, use:
 
-**PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
+```sh
+gh issue view <number> --json number,title,body,labels,comments
+```
 
-When set to `yes`, PRs run through the same labels and states as issues, using the `gh pr` equivalents:
+List open issues with their labels:
 
-- **Read a PR**: `gh pr view <number> --comments` and `gh pr diff <number>` for the diff.
-- **List external PRs for triage**: use `gh api --paginate 'repos/{owner}/{repo}/pulls?state=open'`. Keep entries whose `author_association` is `CONTRIBUTOR`, `FIRST_TIME_CONTRIBUTOR`, or `NONE`.
-- **Comment / label / close**: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.
+```sh
+gh issue list --state open --limit 100 --json number,title,labels
+```
 
-GitHub shares one number space across issues and PRs, so a bare `#42` may be either: resolve with `gh pr view 42` and fall back to `gh issue view 42`.
+Use `--label` or `--state` to narrow the list.
+Use `--json` with `--jq` when you need to filter output.
 
-## When a skill says "publish to the issue tracker"
+GitHub shares issue and pull request numbers.
+For a pull request, use `gh pr view <number> --comments` and `gh pr diff <number>`.
+If the item type is unknown, try `gh pr view <number>` first, then `gh issue view <number>`.
 
-Create a GitHub issue.
+## Write to the tracker
 
-## When a skill says "fetch the relevant ticket"
+When an authorized task says “publish to the issue tracker,” create a GitHub issue.
+When it says “fetch the relevant ticket,” read the issue and its comments.
 
-Run `gh issue view <number> --comments`.
+For issue bodies and comments, write the exact Markdown to a temporary file.
+Pass that file with `--body-file` so newlines and shell characters remain intact.
 
-## Wayfinding operations
+| Action | Command |
+| --- | --- |
+| Create an issue | `gh issue create --title "..." --body-file <path>` |
+| Add a comment | `gh issue comment <number> --body-file <path>` |
+| Add a label | `gh issue edit <number> --add-label "..."` |
+| Remove a label | `gh issue edit <number> --remove-label "..."` |
+| Close an issue | `gh issue close <number>` |
 
-Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
+Read the [label policy](triage-labels.md) before triage.
 
-- **Map**: a single issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body. `gh issue create --label wayfinder:map`.
-- **Child ticket**: an issue linked to the map as a GitHub sub-issue (`gh api` on the sub-issues endpoint). Where sub-issues aren't enabled, add the child to a task list in the map body and put `Part of #<map>` at the top of the child body. Labels: `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). Once claimed, the ticket is assigned to the driving dev.
-- **Blocking**: GitHub's native issue dependencies. Add an edge with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker-db-id>`, where `<blocker-db-id>` is the blocker's numeric database ID. Where dependencies aren't available, use a `Blocked by: #<n>, #<n>` line.
-- **Frontier query**: list the map's open children, then drop any with an open blocker or an assignee; first in map order wins.
-- **Claim**: `gh issue edit <n> --add-assignee @me`.
-- **Resolve**: comment with the answer, close the issue, then append a context pointer to the map's Decisions-so-far.
+## Pull requests as feature requests
+
+**PRs as a request surface: no.**
+
+The `triage` skill reads this flag. Triage feature requests as issues, and review pull requests as proposed code changes.
+
+## Wayfinder tasks
+
+The `wayfinder` skill uses one parent issue, called a map, and linked child issues.
+Use these conventions when that skill is active:
+
+| Item | Convention |
+| --- | --- |
+| Map | Use `wayfinder:map`. Keep the Notes, Decisions-so-far, and Fog sections expected by the skill. |
+| Child | Link it as a GitHub sub-issue. Use `wayfinder:research`, `wayfinder:prototype`, `wayfinder:grilling`, or `wayfinder:task`. |
+| Fallback link | If sub-issues are unavailable, add a task-list link in the map and `Part of #<map>` in the child. |
+| Blocker | Use GitHub issue dependencies. If unavailable, add `Blocked by: #<number>` to the child. |
+| Next task | Take the first open child in map order with no open blocker and no assignee. |
+| Claim | Run `gh issue edit <number> --add-assignee @me`. |
+| Finish | Comment with the result, close the child, and link the result from the map's Decisions-so-far section. |
+
+Create missing Wayfinder labels before applying them.
+For a native dependency, use the blocker's numeric database ID, not its issue number:
+
+```sh
+gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker-db-id>
+```

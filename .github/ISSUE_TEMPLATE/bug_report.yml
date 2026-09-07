@@ -28,8 +28,8 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: Reproduction steps
-      description: Give the smallest sequence that causes the problem.
+      label: Steps to reproduce
+      description: List the steps that cause the problem.
     validations:
       required: true
   - type: textarea
@@ -47,5 +47,5 @@ body:
   - type: textarea
     id: context
     attributes:
-      label: Additional context
-      description: Add a redacted screenshot or log if it helps.
+      label: More details
+      description: If a screenshot or log helps, remove private details before attaching it.

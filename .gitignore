@@ -25,11 +25,12 @@ Packages/
 # Xcode Simulator
 *.xcappdata
 
-# CocoaPods (not used here, but just in case)
+# CocoaPods output from local experiments
 Pods/
 Podfile.lock
 
-# Fastlane
+# Fastlane output (test instructions are in CONTRIBUTING.md)
+fastlane/README.md
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/
@@ -44,8 +45,7 @@ fastlane/test_output
 .env.*
 !.env.example
 
-# Generated store screenshots (device-framed) — regenerated from raw captures
-# via the shared @onerad/promo-framer package (promo.config.mjs) / `fastlane frame`.
+# Generated store screenshot frames
 store-assets/framed/
 store-assets/.frame-tmp/
 
@@ -77,7 +77,7 @@ secrets.xcconfig
 *.xcresult/
 result*.json
 
-# npm deps for the shared promo framer
+# Local Node.js dependencies
 node_modules/
 
 # Local Apple signing overrides

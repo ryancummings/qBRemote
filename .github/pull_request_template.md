@@ -1,12 +1,13 @@
 ## Summary
 
-Describe the behavior change and its reason.
+Describe the change and why it is needed.
 
-## Tests
+## Checks
 
-List the commands and devices that you used.
+List the commands that you ran and their results.
+For simulator tests, include the devices. For documentation changes, include link and rendering checks.
 
-## Privacy review
+## Diff review
 
-- [ ] I removed credentials, cookies, private server addresses, torrent names, and generated files.
-- [ ] I reviewed every changed snapshot image.
+- [ ] I removed secrets, private server data, and unrelated generated files.
+- [ ] I reviewed every changed reference image, or this change has none.

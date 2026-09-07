@@ -2,9 +2,8 @@
 //  TorrentDetailSnapshotTests.swift
 //  qbremoteSnapshotTests
 //
-//  Note: the "Added On" row formats an absolute date via DateFormatter, which
-//  uses the simulator's (= host machine's) time zone. References are recorded
-//  in America/New_York; CI pins the runner to the same zone.
+//  The "Added On" row uses the simulator's time zone. Run these tests in
+//  America/New_York to match the reference images. See CONTRIBUTING.md.
 //
 
 import SnapshotTesting

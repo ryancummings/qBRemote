@@ -5,8 +5,8 @@
 <h1 align="center">Simple qBittorrent Remote</h1>
 
 <p align="center">
-  Your qBittorrent server, at your fingertips.<br>
-  A native, open-source SwiftUI app for iPhone and iPad.
+  Manage your qBittorrent server from your phone or tablet.<br>
+  A native SwiftUI app for iPhone and iPad, licensed under MIT.
 </p>
 
 <p align="center">
@@ -24,7 +24,8 @@
 </p>
 
 Manage downloads, add torrents, and switch between servers without opening the Web UI.
-Your files stay on your computer or NAS. The app controls a qBittorrent server that you own and does not download torrent data to your iPhone or iPad.
+Your files stay on your computer or network storage device (NAS).
+The app controls your qBittorrent server. It does not download torrent data to your iPhone or iPad.
 
 ## Screenshots
 
@@ -60,16 +61,32 @@ Screenshots show demo data from the repository's visual tests. The App Store ver
 
 ## Get started
 
-1. [Download the app from the App Store](https://apps.apple.com/app/id6760194789) on an iPhone or iPad with iOS or iPadOS 26.1 or later.
-2. Enable the Web UI on your qBittorrent server.
-3. Add your server address and credentials in the app, then tap Save.
+The app requires iOS or iPadOS 26.1 or later.
+Use qBittorrent 5.0 or later with its Web UI enabled.
+The app uses the [qBittorrent 5.0 API](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-%28qBittorrent-5.0%29), including its start and stop commands.
 
-Test Connection checks the values before you save. To explore the app without a server, enable demo mode in Settings.
+1. [Download the app from the App Store](https://apps.apple.com/app/id6760194789).
+2. Enable the Web UI on your qBittorrent server.
+3. In the app, tap Add Server.
+4. Enter the host, port, username, and password.
+5. Tap Save.
+
+Enter the host without `http://` or `https://`. Use the HTTPS switch to choose the protocol.
+Test Connection tests the values without saving them. You can save without running the test.
+
+### Try demo mode
+
+1. Open Settings. On the first-launch screen, tap the gear button.
+2. Under About, tap Version five times to reveal Demo Mode.
+3. Turn on Demo Mode.
+
+Demo mode uses sample data and needs no server.
 
 ## Build from source
 
-You need macOS with Xcode 26 or later. The app target has no third-party runtime dependencies.
+You need macOS with Xcode 26.1 or later. The app target has no third-party runtime dependencies.
 The snapshot-test target uses `swift-snapshot-testing`.
+If GitHub shows a 404 page, sign in with an account that has repository access.
 
 ```sh
 git clone https://github.com/ryancummings/qBRemote.git
@@ -79,7 +96,7 @@ open qbremote.xcodeproj
 
 Select the `qbremote` scheme and an iOS simulator. Then run the app.
 
-If you run the app on a physical device, select your development team in Xcode. Use a unique bundle identifier if your Apple account does not own `com.OneRadStudio.qbremote`.
+If you run the app on a physical device, select your development team in Xcode. If your Apple account does not own `com.OneRadStudio.qbremote`, use a unique bundle identifier.
 
 ## Security notes
 
@@ -103,32 +120,26 @@ View
       -> demo adapter
 ```
 
-A server session represents access to one saved profile. It owns cookie restoration, shared login attempts, one authentication retry, and connection status. `TorrentListViewModel` owns refresh orchestration, polling, and torrent actions. External additions can target another profile without changing the active server.
+A server session controls access to one saved server profile.
+It restores cookies, shares login attempts, and retries a rejected request once.
+`TorrentListViewModel` schedules repeated refreshes and runs torrent actions.
+Files opened from another app can target a different profile without changing the active server.
 
-`ServerProfile` stores non-secret configuration. `ServerProfileDraft` owns editing, unsaved connection tests, explicit saves, and credential rollback when persistence fails. `KeychainService` stores secrets by profile UUID.
+`ServerProfile` stores configuration without secrets. `KeychainService` stores passwords and cookies under each profile's unique ID.
+`ServerProfileDraft` tests unsaved values and saves changes only when requested.
+If a save fails, it restores the previous profile values and credentials.
 
-`TorrentBrowsing` derives results and available filter options from the latest torrents. Server switches preserve search and sorting but clear category, tag, location, and tracker selections. Polling retains selections that disappear from the available options. Browsing choices stay in memory only.
+`TorrentBrowsing` applies search, filters, and sorting to the latest torrent list.
+Server switches preserve search, status, sorting, and the tag-match mode.
+They clear category, tag, location, and tracker selections.
+Repeated refreshes retain selected values even when they disappear from the list. These choices stay in memory only.
 
-Read the [domain glossary](CONTEXT.md), [typed-session decision](docs/adr/0001-use-typed-operations-for-server-sessions.md), and [implementation rules](AGENTS.md) before changing these boundaries.
+Read the [domain glossary](CONTEXT.md) and [typed-session decision](docs/adr/0001-use-typed-operations-for-server-sessions.md) for the design terms and reasoning.
+The [implementation rules](AGENTS.md) describe the boundaries that contributions must preserve.
 
 ## Tests
 
-Install Fastlane and `xcbeautify` if you want to use the command-line lanes:
-
-```sh
-brew install fastlane xcbeautify
-fastlane test
-```
-
-You can also run the `qbremote` test action in Xcode.
-
-Visual snapshot tests use reference images from the iOS 26.5 simulator runtime. The command creates its named iPhone and iPad simulators when needed:
-
-```sh
-fastlane snapshot_tests
-```
-
-The required simulator names and image comparison rules are in [AGENTS.md](AGENTS.md).
+See [Contributing](CONTRIBUTING.md#tests) for test commands, simulator requirements, and reference-image updates.
 
 ## Contributing
 

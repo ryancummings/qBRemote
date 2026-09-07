@@ -1,1 +1,1 @@
-A seamless, mobile-friendly alternative to the qBittorrent Web UI. Manage downloads, check speeds, and easily add torrents right from your iPhone.
+Manage your qBittorrent server from your iPhone or iPad. Add torrents, view progress and transfer speeds, and pause or resume downloads.
