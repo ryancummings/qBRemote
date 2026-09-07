@@ -23,7 +23,17 @@ extension QBOperation where Value == GlobalStats {
     }
 }
 
+extension QBOperation where Value == ServerPreferences {
+    static var preferences: Self {
+        Self { try await $0.getPreferences() }
+    }
+}
+
 extension QBOperation where Value == Void {
+    static func setPreferences(_ preferences: ServerPreferences) -> Self {
+        Self { try await $0.setPreferences(preferences) }
+    }
+
     static func pauseTorrents(hashes: [String]) -> Self {
         Self { try await $0.pauseTorrents(hashes: hashes) }
     }

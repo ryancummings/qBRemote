@@ -22,7 +22,8 @@ final class ServerPreferencesViewModel {
     var errorMessage = ""
     
     var profile: ServerProfile?
-    var service: QBittorrentAPIServiceProtocol?
+    private var session: QBServerSession?
+    var connectionStatus: ConnectionStatus { session?.connectionStatus ?? .connecting }
     var modelContext: ModelContext?
     
     // UI Bindings
@@ -39,29 +40,26 @@ final class ServerPreferencesViewModel {
         self.modelContext = context
         
         var serviceToUse = injectedService
-        
-        if ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
-            serviceToUse = MockQBittorrentAPIService()
+        if serviceToUse == nil,
+           ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
+            serviceToUse = MockQBittorrentAPIService(simulate: false)
         }
-        
-        if let serviceToUse {
-            self.service = serviceToUse
-        } else {
-            let scheme = profile.useHTTPS ? "https" : "http"
-            let portStr = profile.port != nil ? ":\(profile.port!)" : ""
-            if let url = URL(string: "\(scheme)://\(profile.host)\(portStr)") {
-                self.service = QBittorrentAPIService(baseURL: url, allowUntrustedSSL: profile.allowUntrustedSSL)
-            }
+        do {
+            self.session = try QBServerSession(profile: profile, service: serviceToUse)
+        } catch {
+            self.session = nil
+            self.error = error
+            self.errorMessage = error.localizedDescription
+            self.showError = true
         }
     }
-    
-    func loadPreferences(password: String) async {
-        guard let service, let profile else { return }
+
+    func loadPreferences() async {
+        guard let session else { return }
         isLoading = true
         
         do {
-            let _ = try await service.login(username: profile.username, password: password)
-            let prefs = try await service.getPreferences()
+            let prefs = try await session.run(.preferences)
             self.preferences = prefs
             self.originalPreferences = prefs
             
@@ -85,16 +83,16 @@ final class ServerPreferencesViewModel {
         isLoading = false
     }
     
-    func savePreferences(password: String) async -> Bool {
-        guard let service, let profile, var prefs = preferences else { return false }
+    func savePreferences() async -> Bool {
+        guard let session, let profile, var prefs = preferences else { return false }
         isSaving = true
         
         // Update prefs from UI strings
         prefs.listen_port = Int(listenPortString)
-        let oldWebUIPort = prefs.web_ui_port
+        let oldWebUIPort = originalPreferences?.web_ui_port
         prefs.web_ui_port = Int(webUIPortString)
         
-        let oldUseHTTPS = prefs.use_https
+        let oldUseHTTPS = originalPreferences?.use_https
         
         prefs.up_limit = Int(upLimitKBString).map { $0 * 1024 }
         prefs.dl_limit = Int(dlLimitKBString).map { $0 * 1024 }
@@ -102,8 +100,7 @@ final class ServerPreferencesViewModel {
         prefs.alt_dl_limit = Int(altDlLimitKBString).map { $0 * 1024 }
         
         do {
-            let _ = try await service.login(username: profile.username, password: password)
-            try await service.setPreferences(prefs)
+            try await session.run(.setPreferences(prefs))
             
             // Update local profile if connection settings changed
             var needsReconnect = false
