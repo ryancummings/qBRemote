@@ -92,7 +92,7 @@ struct TorrentOrganizationSessionTests {
             switch request.url?.path {
             case "/api/v2/app/defaultSavePath": return (200, "/Zulu", [:])
             case "/api/v2/torrents/categories":
-                return (200, "{\"Beta\":{\"name\":\"Beta\",\"savePath\":\"/alpha\"},\"alpha\":{\"name\":\"alpha\",\"savePath\":\"/Zulu\"}}", [:])
+                return (200, "{\"Beta\":{\"name\":\"Beta\",\"save_path\":\"/alpha\"},\"alpha\":{\"name\":\"alpha\",\"save_path\":\"/Zulu\"}}", [:])
             case "/api/v2/torrents/tags": return (200, "[\"Zulu\",\"alpha\"]", [:])
             default: return (200, "[]", [:])
             }
