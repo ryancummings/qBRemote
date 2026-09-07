@@ -45,8 +45,11 @@ final class ServerProfileDraft {
             useHTTPS = profile.useHTTPS
             allowUntrustedSSL = profile.allowUntrustedSSL
             pollingInterval = profile.pollingInterval
-            do { password = try credentials.password(for: profile.id) ?? "" }
-            catch { self.error = error.localizedDescription }
+            do {
+                password = try credentials.password(for: profile.id) ?? ""
+            } catch {
+                self.error = error.localizedDescription
+            }
         }
     }
 
@@ -148,10 +151,16 @@ final class ServerProfileDraft {
 
     private func restoreCredentials(password: String?, cookie: String?, after original: Error) throws {
         var failures: [String] = []
-        do { try credentials.setPassword(password, for: id) }
-        catch { failures.append(error.localizedDescription) }
-        do { try credentials.setCookie(cookie, for: id) }
-        catch { failures.append(error.localizedDescription) }
+        do {
+            try credentials.setPassword(password, for: id)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
+        do {
+            try credentials.setCookie(cookie, for: id)
+        } catch {
+            failures.append(error.localizedDescription)
+        }
         if !failures.isEmpty {
             throw CredentialRollbackError(message: "\(original.localizedDescription) Credential restoration failed: \(failures.joined(separator: "; "))")
         }

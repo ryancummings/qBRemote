@@ -242,9 +242,11 @@ final class QBittorrentAPIService: QBSessionAdapter {
             return try await decode([String].self, from: data)
         } catch let error as QBError {
             switch error {
-            case .unauthorized, .forbidden: throw error
-            default:                       return []
+            case .unauthorized, .forbidden, .networkError, .invalidURL: throw error
+            default:                                                   return []
             }
+        } catch is CancellationError {
+            throw CancellationError()
         } catch {
             return []
         }

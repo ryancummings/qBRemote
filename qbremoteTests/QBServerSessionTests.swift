@@ -292,6 +292,51 @@ struct QBServerSessionTests {
 
 }
 
+extension QBServerSessionTests {
+    @Test("Tag transport failures fail the connection without login")
+    func tagTransportFailure() async throws {
+        let profile = ServerProfile(host: "localhost")
+        let transport = SessionTransport { _ in (200, "[]", [:]) }
+        let session = try makeSession(profile, MemorySessionCredentials(), transport)
+        _ = try await session.run(.torrentTags)
+        transport.handler = { _ in throw URLError(.timedOut) }
+        await #expect(throws: QBError.self) { try await session.run(.torrentTags) }
+        #expect(isFailed(session))
+        // A second failed read must not turn the failed session healthy.
+        await #expect(throws: QBError.self) { try await session.run(.torrentTags) }
+        #expect(isFailed(session))
+        #expect(transport.requests.count == 3)
+    }
+
+    @Test("Tag cancellation propagates without changing connection status", arguments: [false, true])
+    func tagCancellation(failed: Bool) async throws {
+        let profile = ServerProfile(host: "localhost")
+        let transport = SessionTransport { _ in (200, "[]", [:]) }
+        let session = try makeSession(profile, MemorySessionCredentials(), transport)
+        _ = try await session.run(.torrentTags)
+        if failed {
+            transport.handler = { _ in throw URLError(.timedOut) }
+            await #expect(throws: QBError.self) { try await session.run(.torrents()) }
+        }
+        let previousStatus = session.connectionStatus
+        transport.handler = { _ in throw URLError(.cancelled) }
+        await #expect(throws: CancellationError.self) { try await session.run(.torrentTags) }
+        #expect(session.connectionStatus == previousStatus)
+        #expect(transport.requests.count == (failed ? 3 : 2))
+    }
+
+    @Test("Unsupported or malformed tag responses retain the empty fallback", arguments: [200, 404, 500])
+    func tagOperationFallback(status: Int) async throws {
+        let profile = ServerProfile(host: "localhost")
+        let transport = SessionTransport { _ in (status, "invalid JSON", [:]) }
+        let session = try makeSession(profile, MemorySessionCredentials(), transport)
+        #expect(try await session.run(.torrentTags).isEmpty)
+        #expect(session.connectionStatus == .connected)
+        #expect(transport.requests.count == 1)
+    }
+
+}
+
 @MainActor
 final class MemorySessionCredentials: QBSessionCredentials {
     var cookies: [UUID: String] = [:]
