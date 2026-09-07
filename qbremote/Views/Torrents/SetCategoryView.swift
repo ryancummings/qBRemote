@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct SetCategoryView: View {
-    let apiService: QBittorrentAPIServiceProtocol?
+    let session: QBServerSession?
     let torrentHash: String
     let currentCategory: String
     let onSuccess: () -> Void
@@ -91,8 +91,8 @@ struct SetCategoryView: View {
             }
         }
         .onAppear {
-            if let service = apiService {
-                viewModel.configure(apiService: service, torrentHash: torrentHash, currentCategory: currentCategory)
+            if let session {
+                viewModel.configure(session: session, torrentHash: torrentHash, currentCategory: currentCategory)
                 Task {
                     await viewModel.loadCategorySuggestions()
                 }

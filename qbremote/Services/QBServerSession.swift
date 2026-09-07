@@ -37,6 +37,42 @@ extension QBOperation where Value == Void {
     }
 }
 
+extension QBOperation where Value == String {
+    static var defaultSavePath: Self {
+        Self { try await $0.getDefaultSavePath() }
+    }
+}
+
+extension QBOperation where Value == [String: QBittorrentAPIService.TorrentCategory] {
+    static var torrentCategories: Self {
+        Self { try await $0.getTorrentCategories() }
+    }
+}
+
+extension QBOperation where Value == [String] {
+    static var torrentTags: Self {
+        Self { try await $0.getTorrentTags() }
+    }
+}
+
+extension QBOperation where Value == Void {
+    static func setTorrentLocation(hashes: [String], location: String) -> Self {
+        Self { try await $0.setTorrentLocation(hashes: hashes, location: location) }
+    }
+
+    static func setTorrentCategory(hashes: [String], category: String) -> Self {
+        Self { try await $0.setTorrentCategory(hashes: hashes, category: category) }
+    }
+
+    static func addTorrentTags(hashes: [String], tags: [String]) -> Self {
+        Self { try await $0.addTorrentTags(hashes: hashes, tags: tags) }
+    }
+
+    static func removeTorrentTags(hashes: [String], tags: [String]) -> Self {
+        Self { try await $0.removeTorrentTags(hashes: hashes, tags: tags) }
+    }
+}
+
 // MARK: - Credentials
 
 @MainActor

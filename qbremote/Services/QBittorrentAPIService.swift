@@ -240,6 +240,11 @@ final class QBittorrentAPIService: QBittorrentAPIServiceProtocol {
             let request = try authenticatedGET(url: baseURL.appending(path: "/api/v2/torrents/tags"))
             let (data, _) = try await performRequest(request)
             return try await decode([String].self, from: data)
+        } catch let error as QBError {
+            switch error {
+            case .unauthorized, .forbidden: throw error
+            default:                       return []
+            }
         } catch {
             return []
         }

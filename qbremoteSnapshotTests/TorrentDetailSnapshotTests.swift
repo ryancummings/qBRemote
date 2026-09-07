@@ -23,7 +23,7 @@ extension SnapshotSuite {
             NavigationStack {
                 TorrentDetailView(
                     torrent: torrent,
-                    apiService: nil,
+                    session: nil,
                     onPause: {},
                     onResume: {},
                     onDelete: { _ in },
