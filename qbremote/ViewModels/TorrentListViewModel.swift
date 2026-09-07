@@ -260,6 +260,10 @@ final class TorrentListViewModel {
 
     // MARK: - Provide service reference for AddTorrentViewModel
 
+    func sessionForAdding() -> QBServerSession? {
+        serverSession
+    }
+
     func apiServiceForAdding() -> QBittorrentAPIServiceProtocol? {
         apiService
     }

@@ -19,7 +19,7 @@ extension SnapshotSuite {
         func addTorrentURLMode() {
             // AddTorrentView provides its own NavigationStack.
             assertScreenSnapshot(
-                AddTorrentView(apiService: nil, onSuccess: {}),
+                AddTorrentView(session: nil, onSuccess: {}),
                 devices: [SnapshotEnvironment.primaryDevice]
             )
         }

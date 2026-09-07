@@ -7,12 +7,12 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct AddTorrentView: View {
-    let apiService: QBittorrentAPIServiceProtocol?
+    let session: QBServerSession?
     let initialURL: URL?
     let onSuccess: () -> Void
 
-    init(apiService: QBittorrentAPIServiceProtocol?, initialURL: URL? = nil, onSuccess: @escaping () -> Void) {
-        self.apiService = apiService
+    init(session: QBServerSession?, initialURL: URL? = nil, onSuccess: @escaping () -> Void) {
+        self.session = session
         self.initialURL = initialURL
         self.onSuccess = onSuccess
     }
@@ -153,8 +153,8 @@ struct AddTorrentView: View {
             }
         }
         .onAppear {
-            if let service = apiService {
-                viewModel.configure(apiService: service, initialURL: initialURL)
+            if let session {
+                viewModel.configure(session: session, initialURL: initialURL)
                 Task {
                     await viewModel.loadSavePathSuggestions()
                 }

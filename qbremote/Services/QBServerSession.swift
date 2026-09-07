@@ -23,6 +23,28 @@ extension QBOperation where Value == GlobalStats {
     }
 }
 
+extension QBOperation where Value == String {
+    static var defaultSavePath: Self {
+        Self { try await $0.getDefaultSavePath() }
+    }
+}
+
+extension QBOperation where Value == [String: QBittorrentAPIService.TorrentCategory] {
+    static var torrentCategories: Self {
+        Self { try await $0.getTorrentCategories() }
+    }
+}
+
+extension QBOperation where Value == Void {
+    static func addTorrentByURL(_ url: String, savePath: String) -> Self {
+        Self { try await $0.addTorrentByURL(url, savePath: savePath) }
+    }
+
+    static func addTorrentByData(_ data: Data, filename: String, savePath: String) -> Self {
+        Self { try await $0.addTorrentByData(data, filename: filename, savePath: savePath) }
+    }
+}
+
 // MARK: - Credentials
 
 @MainActor

@@ -70,14 +70,13 @@ fileprivate struct AuthWrapperAddTorrentView: View {
     let profile: ServerProfile
     let onDismiss: () -> Void
 
-    @State private var apiService: QBittorrentAPIServiceProtocol?
-    @State private var error: String?
+    @State private var viewModel = ExternalAddTorrentViewModel()
 
     var body: some View {
         Group {
-            if let apiService {
-                AddTorrentView(apiService: apiService, initialURL: url, onSuccess: onDismiss)
-            } else if let error {
+            if let session = viewModel.session {
+                AddTorrentView(session: session, initialURL: url, onSuccess: onDismiss)
+            } else if let error = viewModel.error {
                 VStack(spacing: 16) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 48))
@@ -104,47 +103,10 @@ fileprivate struct AuthWrapperAddTorrentView: View {
                         .foregroundStyle(.secondary)
                 }
                 .task {
-                    await authenticate()
+                    await viewModel.prepare(profile: profile)
                 }
             }
         }
     }
 
-    private func authenticate() async {
-        guard let baseURL = profile.baseURL else {
-            error = "Invalid Server URL"
-            return
-        }
-        let service = QBittorrentAPIService(baseURL: baseURL, allowUntrustedSSL: profile.allowUntrustedSSL)
-        
-        // Try saved cookie first
-        if let cookie = KeychainService.loadCookie(for: profile.id) {
-            service.setSessionCookie(cookie)
-            do {
-                let _ = try await service.getGlobalStats()
-                self.apiService = service
-                return
-            } catch {
-                // Cookie likely expired, proceed to password login
-            }
-        }
-
-        // Try password login
-        guard let password = KeychainService.loadPassword(for: profile.id) else {
-            error = "No password saved for this server."
-            return
-        }
-
-        do {
-            let sid = try await service.login(username: profile.username, password: password)
-            if !sid.isEmpty {
-                KeychainService.saveCookie(sid, for: profile.id)
-            }
-            self.apiService = service
-        } catch let qbErr as QBError {
-            self.error = qbErr.errorDescription ?? "Login failed."
-        } catch {
-            self.error = error.localizedDescription
-        }
-    }
 }
