@@ -196,7 +196,7 @@ struct RootView: View {
     private func reconnect() {
         if isDemoMode {
             let demoProfile = ServerProfile(name: "Demo", host: "demo.local", port: 8080, username: "demo", isActive: true)
-            torrentVM.configure(with: demoProfile, injectedService: MockQBittorrentAPIService())
+            torrentVM.configure(with: demoProfile, sessionFactory: .demo)
             Task {
                 torrentVM.connectionStatus = .connected
                 torrentVM.torrents = MockQBittorrentAPIService.sharedMockTorrents
@@ -213,7 +213,7 @@ struct RootView: View {
         
 #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-isUITest") {
-            torrentVM.configure(with: profile, injectedService: MockQBittorrentAPIService())
+            torrentVM.configure(with: profile, sessionFactory: .demo)
             // Simulate start behavior for UI tests without real polling
             Task {
                 torrentVM.connectionStatus = .connected

@@ -110,7 +110,7 @@ struct TorrentListView: View {
         }
         .sheet(isPresented: $showAddTorrent) {
             NavigationStack {
-                AddTorrentView(session: torrentVM.sessionForAdding()) {
+                AddTorrentView(session: torrentVM.serverSession) {
                     Task { await torrentVM.fetchAll() }
                 }
             }

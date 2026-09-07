@@ -8,8 +8,7 @@ final class ExternalAddTorrentViewModel {
 
     func prepare(
         profile: ServerProfile,
-        injectedService: (any QBittorrentAPIServiceProtocol)? = nil,
-        credentials: (any QBSessionCredentials)? = nil
+        sessionFactory: QBServerSessionFactory = QBServerSessionFactory()
     ) async {
         session = nil
         error = nil
@@ -18,7 +17,7 @@ final class ExternalAddTorrentViewModel {
             return
         }
         do {
-            let session = try QBServerSession(profile: profile, service: injectedService, credentials: credentials)
+            let session = try sessionFactory.session(for: profile)
             _ = try await session.run(.globalStats)
             try Task.checkCancellation()
             self.session = session

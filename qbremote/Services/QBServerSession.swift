@@ -119,7 +119,7 @@ final class QBServerSession {
 
     private let profileID: UUID
     private let username: String
-    private let service: any QBittorrentAPIServiceProtocol
+    private let service: any QBSessionAdapter
     private let credentials: any QBSessionCredentials
     private var loginTask: Task<Void, Error>?
     private var authenticationGeneration = 0
@@ -128,13 +128,13 @@ final class QBServerSession {
 
     init(
         profile: ServerProfile,
-        service: (any QBittorrentAPIServiceProtocol)? = nil,
+        service: any QBSessionAdapter,
         credentials: (any QBSessionCredentials)? = nil
     ) throws {
-        guard let url = profile.baseURL else { throw QBError.invalidURL }
+        guard profile.baseURL != nil else { throw QBError.invalidURL }
         self.profileID = profile.id
         self.username = profile.username
-        self.service = service ?? QBittorrentAPIService(baseURL: url, allowUntrustedSSL: profile.allowUntrustedSSL)
+        self.service = service
         self.credentials = credentials ?? KeychainSessionCredentials()
         if let cookie = self.credentials.loadCookie(for: profile.id), !cookie.isEmpty {
             self.service.setSessionCookie(cookie)

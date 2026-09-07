@@ -1,5 +1,13 @@
 import Foundation
 
+/// Session-internal adapter capabilities. Workflows receive typed sessions instead.
+@MainActor
+protocol QBSessionAdapter: QBittorrentAPIServiceProtocol {
+    func setSessionCookie(_ cookie: String?)
+    func login(username: String, password: String) async throws -> String
+    func logout() async throws
+}
+
 /// Connection-test input contains no saved model or credential-store reference.
 struct QBServerConnection {
     let host: String
@@ -15,15 +23,25 @@ struct QBServerConnection {
 }
 
 struct QBServerSessionFactory {
-    private let makeService: @MainActor (URL, Bool) -> any QBittorrentAPIServiceProtocol
+    private let makeService: @MainActor (URL, Bool) -> any QBSessionAdapter
 
-    init(makeService: @escaping @MainActor (URL, Bool) -> any QBittorrentAPIServiceProtocol = Self.productionService) {
+    private let credentials: (any QBSessionCredentials)?
+
+    init(
+        makeService: @escaping @MainActor (URL, Bool) -> any QBSessionAdapter = Self.productionService,
+        credentials: (any QBSessionCredentials)? = nil
+    ) {
         self.makeService = makeService
+        self.credentials = credentials
+    }
+
+    static var demo: Self {
+        Self(makeService: { _, _ in MockQBittorrentAPIService() })
     }
 
     func session(for profile: ServerProfile) throws -> QBServerSession {
         guard let url = profile.baseURL else { throw QBError.invalidURL }
-        return try QBServerSession(profile: profile, service: makeService(url, profile.allowUntrustedSSL))
+        return try QBServerSession(profile: profile, service: makeService(url, profile.allowUntrustedSSL), credentials: credentials)
     }
 
     func testConnection(_ connection: QBServerConnection, password: String) async throws {
@@ -34,9 +52,12 @@ struct QBServerSessionFactory {
         try Task.checkCancellation()
     }
 
-    private static func productionService(url: URL, allowUntrustedSSL: Bool) -> any QBittorrentAPIServiceProtocol {
+    private static func productionService(url: URL, allowUntrustedSSL: Bool) -> any QBSessionAdapter {
+        if UserDefaults.standard.bool(forKey: "isDemoMode") {
+            return MockQBittorrentAPIService()
+        }
         #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("-isUITest") || UserDefaults.standard.bool(forKey: "isDemoMode") {
+        if ProcessInfo.processInfo.arguments.contains("-isUITest") {
             return MockQBittorrentAPIService()
         }
         #endif

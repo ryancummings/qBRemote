@@ -24,9 +24,9 @@ struct TorrentRefreshSessionTests {
             return (200, request.url?.path == "/api/v2/transfer/info" ? statsJSON : "[]", [:])
         }
         let viewModel = TorrentListViewModel()
-        viewModel.configure(with: profile, injectedService: QBittorrentAPIService(
-            baseURL: try #require(profile.baseURL), transport: transport
-        ))
+        viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }))
         await viewModel.fetchAll()
         #expect(logins == 1)
         #expect(viewModel.torrents.isEmpty)
@@ -46,9 +46,9 @@ struct TorrentRefreshSessionTests {
         let profile = ServerProfile(host: "localhost")
         let transport = SessionTransport { _ in throw URLError(.timedOut) }
         let viewModel = TorrentListViewModel()
-        viewModel.configure(with: profile, injectedService: QBittorrentAPIService(
-            baseURL: try #require(profile.baseURL), transport: transport
-        ))
+        viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }))
         await viewModel.start(profile: profile)
         defer { viewModel.stopPolling() }
         #expect(transport.requests.count == 1)
@@ -69,12 +69,12 @@ struct TorrentRefreshSessionTests {
             return (200, request.url?.path == "/api/v2/transfer/info" ? statsJSON : "[]", [:])
         }
         let viewModel = TorrentListViewModel()
-        viewModel.configure(with: oldProfile, injectedService: QBittorrentAPIService(
-            baseURL: try #require(oldProfile.baseURL), transport: transport
-        ))
+        viewModel.configure(with: oldProfile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }))
         let refresh = Task { await viewModel.fetchAll() }
         await started.wait()
-        viewModel.configure(with: newProfile, injectedService: MockQBittorrentAPIService(simulate: false))
+        viewModel.configure(with: newProfile, sessionFactory: QBServerSessionFactory(makeService: { _, _ in MockQBittorrentAPIService(simulate: false) }))
         finish.open()
         await refresh.value
         #expect(viewModel.activeProfileId == newProfile.id)

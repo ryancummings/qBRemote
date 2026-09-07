@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-final class MockQBittorrentAPIService: QBittorrentAPIServiceProtocol {
+final class MockQBittorrentAPIService: QBSessionAdapter {
     
     var baseURL: URL = URL(string: "http://localhost:8080")!
     

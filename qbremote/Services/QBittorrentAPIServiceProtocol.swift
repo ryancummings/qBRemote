@@ -2,12 +2,6 @@ import Foundation
 
 @MainActor
 protocol QBittorrentAPIServiceProtocol: AnyObject, Sendable {
-    var baseURL: URL { get }
-    
-    func setSessionCookie(_ cookie: String?)
-    func login(username: String, password: String) async throws -> String
-    func logout() async throws
-    
     func getTorrents(filter: TorrentFilter) async throws -> [Torrent]
     func getGlobalStats() async throws -> GlobalStats
     func getDefaultSavePath() async throws -> String

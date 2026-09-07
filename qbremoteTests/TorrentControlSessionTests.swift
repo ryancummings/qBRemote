@@ -5,10 +5,11 @@ import Testing
 @MainActor
 struct TorrentControlSessionTests {
     enum Control: CaseIterable, Sendable {
-        case pause, resume, delete, deleteFiles
+        case pause, resume, delete, deleteFiles, move
 
         var path: String {
             switch self {
+            case .move:                 return "/api/v2/torrents/setLocation"
             case .pause:                return "/api/v2/torrents/stop"
             case .resume:               return "/api/v2/torrents/start"
             case .delete, .deleteFiles: return "/api/v2/torrents/delete"
@@ -17,6 +18,7 @@ struct TorrentControlSessionTests {
 
         var body: String {
             switch self {
+            case .move:           return "hashes=target&location=%2Fdownloads"
             case .pause, .resume: return "hashes=target"
             case .delete:         return "hashes=target&deleteFiles=false"
             case .deleteFiles:    return "hashes=target&deleteFiles=true"
@@ -25,6 +27,7 @@ struct TorrentControlSessionTests {
 
         func perform(on viewModel: TorrentListViewModel, torrent: Torrent) async {
             switch self {
+            case .move:        await viewModel.move(torrent: torrent, to: "/downloads")
             case .pause:       await viewModel.pause(torrent: torrent)
             case .resume:      await viewModel.resume(torrent: torrent)
             case .delete:      await viewModel.delete(torrent: torrent)
@@ -96,9 +99,9 @@ struct TorrentControlSessionTests {
             }
             return (200, "{\"dl_info_speed\":12,\"up_info_speed\":3,\"dl_info_data\":100,\"up_info_data\":20}", [:])
         }
-        viewModel.configure(with: profile, injectedService: QBittorrentAPIService(
-            baseURL: try #require(profile.baseURL), transport: transport
-        ))
+        viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { url, allowUntrustedSSL in
+            QBittorrentAPIService(baseURL: url, allowUntrustedSSL: allowUntrustedSSL, transport: transport)
+        }))
         await control.perform(on: viewModel, torrent: torrent)
         #expect(mutations == expectedMutations)
         #expect(logins == expectedLogins)

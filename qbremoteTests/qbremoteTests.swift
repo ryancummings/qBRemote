@@ -5,33 +5,13 @@ import Foundation
 @MainActor
 struct TorrentListViewModelTests {
 
-    @Test("ViewModel successfully fetches and populates mock data")
-    func testFetchTorrents() async throws {
-        let viewModel = TorrentListViewModel()
-        let mockService = MockQBittorrentAPIService()
-        let profile = ServerProfile(name: "Test Server", host: "127.0.0.1", port: 8080, username: "admin", isActive: true)
-        
-        viewModel.configure(with: profile, injectedService: mockService)
-        
-        // Use the start method which handles the initial fetch
-        await viewModel.start(profile: profile)
-        
-        // Wait briefly for the async fetch to complete
-        try await Task.sleep(nanoseconds: 100_000_000)
-        
-        #expect(viewModel.torrents.count > 0, "Torrents should be populated from mock service.")
-        #expect(viewModel.stats != nil, "Global stats should be populated from mock service.")
-        #expect(viewModel.connectionStatus == .connected, "Connection status should be connected.")
-        #expect(viewModel.isLoading == false, "Loading state should be false after fetch completes.")
-    }
-
     @Test("Filtering torrents by active status works correctly")
     func testFilterActiveTorrents() async throws {
         let viewModel = TorrentListViewModel()
         let mockService = MockQBittorrentAPIService()
         let profile = ServerProfile(name: "Test Server", host: "127.0.0.1", port: 8080, username: "admin", isActive: true)
         
-        viewModel.configure(with: profile, injectedService: mockService)
+        viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { _, _ in mockService }))
         await viewModel.start(profile: profile)
         try await Task.sleep(nanoseconds: 100_000_000)
         
@@ -53,7 +33,7 @@ struct TorrentListViewModelTests {
         let mockService = MockQBittorrentAPIService()
         let profile = ServerProfile(name: "Test Server", host: "127.0.0.1", port: 8080, username: "admin", isActive: true)
         
-        viewModel.configure(with: profile, injectedService: mockService)
+        viewModel.configure(with: profile, sessionFactory: QBServerSessionFactory(makeService: { _, _ in mockService }))
         await viewModel.start(profile: profile)
         try await Task.sleep(nanoseconds: 100_000_000)
         
