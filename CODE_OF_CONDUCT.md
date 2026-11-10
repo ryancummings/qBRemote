@@ -19,7 +19,7 @@ Do not make sexual comments or advances, publish private information, or repeate
 
 ## Enforcement
 
-Email conduct problems privately to [support@rads.icu](mailto:support@rads.icu).
+Email conduct problems privately to [support@oneradstudio.com](mailto:support@oneradstudio.com).
 The maintainer will review the report and choose a response based on the harm.
 
 The maintainer can edit or remove contributions and can temporarily or permanently ban a participant. The maintainer will protect the reporter's privacy as far as possible.

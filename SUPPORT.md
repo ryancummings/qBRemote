@@ -1,6 +1,6 @@
 # Support
 
-For app support, email [support@rads.icu](mailto:support@rads.icu).
+For app support, email [support@oneradstudio.com](mailto:support@oneradstudio.com).
 If you have repository access, use [GitHub Issues](https://github.com/ryancummings/qBRemote/issues) for app bugs and feature requests.
 For security problems, follow [SECURITY.md](SECURITY.md).
 

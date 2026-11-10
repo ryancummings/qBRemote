@@ -2,7 +2,7 @@
 
 ## Report a problem
 
-Email suspected security problems to [support@rads.icu](mailto:support@rads.icu).
+Email suspected security problems to [support@oneradstudio.com](mailto:support@oneradstudio.com).
 Use “Simple qBittorrent Remote security report” as the subject.
 The maintainer will acknowledge the report and discuss when to publish the details with you.
 
